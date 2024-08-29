@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="console_out" target="SYSTEM_OUT">
+			<!--  <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t]
+			%-5level %logger{36}
+			- %msg%n" /> -->
+			<PatternLayout pattern="%d{mm:ss} %-5level %logger{36} - %msg%n" />
+			<ThresholdFilter level="warn" onMatch="DENY" onMismatch="ACCEPT" />
+
+		</Console>
+		<Console name="console_err" target="SYSTEM_ERR">
+			<Filters>
+				<ThresholdFilter level="warn" />
+			</Filters>
+			<!--  <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t]
+			%-5level %logger{36}
+			- %msg%n" /> -->
+			<PatternLayout pattern="%d{mm:ss} %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="FunctionPiecewiseImpl" level="debug" additivity="false">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Logger>
+
+		<Root level="info">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Root>t> </Loggers>
+</Configuration>
