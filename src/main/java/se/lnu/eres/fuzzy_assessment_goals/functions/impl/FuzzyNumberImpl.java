@@ -21,7 +21,6 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
-import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;

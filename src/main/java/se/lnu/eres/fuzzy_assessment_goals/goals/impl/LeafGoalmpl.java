@@ -21,6 +21,7 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
@@ -28,12 +29,12 @@ import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
 public class LeafGoalmpl implements LeafGoal {
 
 	private final LeafGoalType type;
-	private FuzzyNumber goalSatisfaction;
+	private FuzzyNumber truthValue;
 	
 	
 	public LeafGoalmpl(LeafGoalType type, FuzzyNumber function) {
 		this.type=type;
-		this.goalSatisfaction=function;
+		this.truthValue=function;
 		
 		
 	}
@@ -48,16 +49,29 @@ public class LeafGoalmpl implements LeafGoal {
 		switch (type) {
         case LB:
             //Monotonically increasing. It should start with y=0 and finish with y=1, but we leave that check out
-        	return goalSatisfaction.getFunction().isMonotonicallyIncreasing();
+        	return truthValue.getFunction().isMonotonicallyIncreasing();
            
         case UB:
         	//Monotonically decreasing. It should start with y=1 and finish with y=0, but we leave that check out
-        	return goalSatisfaction.getFunction().isMonotonicallyDecreasing();
+        	return truthValue.getFunction().isMonotonicallyDecreasing();
             //break;
+        default: //( INT, MIN, MAX)
+        	//TODO: Continue with the rest. check that the type corresponds to the goal satisfaction function!
+        	throw new UnsupportedOperationException();
     }
 		
-		//TODO: Continue with the rest. check that the type corresponds to the goal satisfaction function!
-		return false;
+	
+	}
+
+	@Override
+	public FuzzyBoolean assessSatisfaction(FuzzyNumber observation) {
+		
+		//Zadeh's principle B(y) = sup{O(x)|μG (x) = y}, (0 ≤ y ≤ 1)
+		
+		//Points of interest: the combination of the points of the observation and the truth values
+		
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 	}
 
 }

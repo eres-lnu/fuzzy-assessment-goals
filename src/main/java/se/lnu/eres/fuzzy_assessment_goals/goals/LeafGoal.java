@@ -21,10 +21,15 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.goals;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
+
 public interface LeafGoal {
 
 	LeafGoalType getType();
 	
 	boolean isCorrectType();
+	
+	FuzzyBoolean assessSatisfaction(FuzzyNumber observation);
 	
 }
