@@ -28,4 +28,25 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck{
 	void addPoint(double x, double y);
 	
 	FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException;
+	
+
+
+	double maximumValueInPoints();
+
+	double minimumValueInPoints();
+
+	boolean monotonicallyIncreasingUntilReachingTopValue();
+
+	boolean monotonicallyDecreasingFromTopValue();
+	
+	/**
+	 * @return whether the function is monotonically increasing
+	 */
+	boolean isMonotonicallyIncreasing();
+	
+	default boolean isMonotonicallyDecreasing() {
+		throw new UnsupportedOperationException();
+	}
+	
+	LinearPieceWiseFunctionDataPoints getDatapoints();
 }

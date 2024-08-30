@@ -22,41 +22,45 @@
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumberCheck;
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 
 public abstract class AbstractFuzzyNumber implements FuzzyNumberCheck {
 
+	protected LinearPieceWiseFunction function;
+	
 	public AbstractFuzzyNumber() {
-
+		super();
 	}
+
+	
+	public AbstractFuzzyNumber(LinearPieceWiseFunction function) {
+		super();
+		this.function = function;
+	}
+
+
 
 	@Override
 	public boolean isFuzzyNumber() {
 
 		// Condition 1: top y is 1.
-		if (maximumValueInPoints() != 1.0) {
+		if (function.maximumValueInPoints() != 1.0) {
 			return false;
 		}
 
 		// Condition 2: Bottom is 0
-		if (minimumValueInPoints() != 0.0) {
+		if (function.minimumValueInPoints() != 0.0) {
 			return false;
 		}
 
 		// Condition 3: monotonically increasing from [a,b]
-		if (!monotonicallyIncreasingUntilReachingTopValue()) {
+		if (!function.monotonicallyIncreasingUntilReachingTopValue()) {
 			return false;
 		}
 
 		// Condition 4: monotonically decreasing from [c,d]
-		return (monotonicallyDecreasingFromTopValue());
+		return (function.monotonicallyDecreasingFromTopValue());
 	}
 
-	protected abstract boolean monotonicallyDecreasingFromTopValue();
-
-	protected abstract boolean monotonicallyIncreasingUntilReachingTopValue();
-
-	protected abstract double minimumValueInPoints();
-
-	protected abstract double maximumValueInPoints();
 
 }

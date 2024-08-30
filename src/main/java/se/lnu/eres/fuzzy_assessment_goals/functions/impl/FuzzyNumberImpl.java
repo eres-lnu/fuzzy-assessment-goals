@@ -29,121 +29,40 @@ import org.apache.logging.log4j.Logger;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
 
 public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber {
 
 	private static final Logger Logger = LogManager.getLogger(FuzzyNumberImpl.class.getSimpleName());
 
-	protected List<ImmutablePair<Double, Double>> points;
+
 
 	public FuzzyNumberImpl() {
 		super();
 	}
 
-	public FuzzyNumberImpl(List<ImmutablePair<Double, Double>> points) {
-		super();
-		this.points = points;
-	}
-
-	static public boolean IsFuzzyNumber(List<ImmutablePair<Double, Double>> points) {
-
-		return (new FuzzyNumberImpl(points)).isFuzzyNumber();
+	public FuzzyNumberImpl(LinearPieceWiseFunction function) {
+		super(function);
 
 	}
+
+	static public boolean IsFuzzyNumber(LinearPieceWiseFunction function) {
+
+		return (new FuzzyNumberImpl(function)).isFuzzyNumber();
+
+	}
+
 
 	@Override
-	protected boolean monotonicallyDecreasingFromTopValue() {
-		if (points.size() < 2) {
-			return true;
-		}
-		ImmutablePair<Double, Double> previousp = null;
-		boolean topReached = false;
-		for (ImmutablePair<Double, Double> p : points) {
-			if (previousp == null) {
-				previousp = p;
-			} else {
-
-				if (!topReached) {
-					if (previousp.getRight() >= 1.0) {
-						topReached = true;
-					} else {
-						previousp = p;
-					}
-				} else {// top was already reached
-					if (previousp.getRight() < p.getRight()) {
-						// not decreasing!
-						return false;
-					} else {
-						previousp = p;
-					}
-				}
-
-			}
-		}
-		return true;
-
-	}
-
-	@Override
-	protected boolean monotonicallyIncreasingUntilReachingTopValue() {
-		if (points.size() < 2) {
-			return true;
-		}
-		ImmutablePair<Double, Double> previousp = null;
-		for (ImmutablePair<Double, Double> p : points) {
-			if (previousp == null) {
-				previousp = p;
-			} else {
-				if (p.getRight() < 1.0) {// still increasing
-					if (previousp.getRight() > p.getRight()) {
-						return false;
-					}
-					previousp = p;
-				} else {
-					return true;
-				}
-
-			}
-
-		}
-
-		// It should not reach here because there should exist a position with value 1!
-		Logger.warn(
-				"The execution should not have reached this point. A Funtion has been traversed and it has not reached any position x such that f(x)>=1. The function is {}",
-				points.toString());
-		return true;
-	}
-
-	@Override
-	protected double maximumValueInPoints() {
-		// the maximum must correspond to one of the piece extremes of the function.
-		double currentMax = 0.0;
-		for (ImmutablePair<Double, Double> p : points) {
-			if (p.getRight() > currentMax) {
-				currentMax = p.getRight();
-			}
-		}
-		return currentMax;
-	}
-
-	@Override
-	protected double minimumValueInPoints() {
-		// the minimum must correspond to one of the piece extremes of the function.
-		double currentMin = 1.0;
-		for (ImmutablePair<Double, Double> p : points) {
-			if (p.getRight() < currentMin) {
-				currentMin = p.getRight();
-			}
-		}
-		return currentMin;
-	}
-
-	@Override
-	public ImmutablePair<Double, Double> getSupport() throws FuzzyOperationException {
+	public ImmutablePair<Double, Double> getSupport() {
+		//TODO: Extend in case that the fuzzy number should use something different the pieceWise
+		LinearPieceWiseFunctionDataPoints points = function.getDatapoints();
 		// The left part is the last element in points that is 0 before increasing
-		// The right part is the first element in porints that is 0 after decreasing
+		// The right part is the first element in prints that is 0 after decreasing
 		ImmutablePair<Double, Double> previousp = null;
-		Double supportLeft = -Double.MAX_VALUE, supportRight;
+		Double supportLeft = points.getFirst().getLeft();
+		Double supportRight = points.getLast().getLeft();
 		for (ImmutablePair<Double, Double> p : points) {
 			if (previousp == null) {
 				previousp = p;
@@ -161,34 +80,60 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 			}
 		}
 
-		throw new FuzzyOperationException("There was not found Support for the fuzzy number " + points.toString());
+		return new ImmutablePair<Double, Double>(supportLeft, supportRight);
 
 	}
 
 	@Override
 	public ImmutablePair<Double, Double> getCore() throws FuzzyOperationException {
+		//TODO: Extend in case that the fuzzy number should use something different the pieceWise
+		LinearPieceWiseFunctionDataPoints points = function.getDatapoints();
 		// The left part is the first element in points that is 1
 		// The right part is the last element in points that is 1
 		ImmutablePair<Double, Double> previousp = null;
-		Double coreLeft = -Double.MAX_VALUE, coreRight;
+		Double coreLeft = -Double.MAX_VALUE, coreRight = Double.MAX_VALUE;
+		boolean definedCoreLeft = false, definedCoreRight = false;
+
 		for (ImmutablePair<Double, Double> p : points) {
 			if (previousp == null) {
+				if (p.getRight() == 1) {
+					coreLeft = p.getLeft();
+					definedCoreLeft = true;
+				}
 				previousp = p;
 			} else {
 				// Looking for the left part
 				if (p.getRight() == 1 && previousp.getRight() < 1) {
 					coreLeft = p.getLeft();
+					definedCoreLeft = true;
 				}
 				// Looking for the right part
 				if (p.getRight() < 1 && previousp.getRight() == 1) {
 					coreRight = previousp.getLeft();
-					return new ImmutablePair<Double, Double>(coreLeft, coreRight);
+					definedCoreRight = true;
+
 				}
 				previousp = p;
 			}
 
 		}
+		// Maybe it finished with 1: FuzzBool(1)=1
+		if (points.getLast().getRight() == 1) {
+			coreRight = points.getLast().getLeft();
+			definedCoreRight = true;
+		}
+
+		if (definedCoreRight && definedCoreLeft) {
+			return new ImmutablePair<Double, Double>(coreLeft, coreRight);
+		}
+
+		Logger.warn("There was not found a Core for the following fuzzy number {}", points.toString());
 		throw new FuzzyOperationException("There was not found Core for the fuzzy number " + points.toString());
+	}
+
+	@Override
+	public LinearPieceWiseFunction getFunction() {
+		return function;
 	}
 
 }
