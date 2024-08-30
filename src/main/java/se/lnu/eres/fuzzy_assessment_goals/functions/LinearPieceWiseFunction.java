@@ -21,9 +21,11 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
-public interface LinearPieceWiseFunction {
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyNumberConversionException;
+
+public interface LinearPieceWiseFunction extends FuzzyNumberCheck{
 
 	void addPoint(double x, double y);
 	
-	FuzzyNumber getFuzzyNumber();
+	FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException;
 }

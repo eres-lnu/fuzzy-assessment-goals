@@ -22,10 +22,15 @@
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyNumberConversionException;
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FunctionPiecewiseImpl;
 
 class FunctionPiecewiseImplTest {
 
@@ -38,7 +43,7 @@ class FunctionPiecewiseImplTest {
 	}
 
 	@Test
-	void testSuccessFuzzyNumber() {
+	void testSuccessFuzzyNumber() throws FuzzyNumberConversionException {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
@@ -46,8 +51,8 @@ class FunctionPiecewiseImplTest {
 		function.addPoint(9, 0);
 		function.addPoint(Double.MAX_VALUE, 0);
 		
-		FuzzyNumber f = function.getFuzzyNumber();
-		Assertions.assertTrue(f.isFuzzyNumber(), "The function should be a fuzzy number but it isn't + " + function.toString());
+		Assertions.assertTrue(function.isFuzzyNumber(), "The function should be a fuzzy number but it isn't + " + function.toString());
+
 	}
 
 	
@@ -60,8 +65,7 @@ class FunctionPiecewiseImplTest {
 		function.addPoint(9, 0);
 		function.addPoint(Double.MAX_VALUE, 0);
 		
-		FuzzyNumber f = function.getFuzzyNumber();
-		Assertions.assertFalse(f.isFuzzyNumber(), "The function should not be a fuzzy number because it has a membership higher than 1, but it is: + " + function.toString());
+		Assertions.assertFalse(function.isFuzzyNumber(), "The function should not be a fuzzy number because it has a membership higher than 1, but it is: + " + function.toString());
 	}
 	
 	@Test
@@ -75,8 +79,42 @@ class FunctionPiecewiseImplTest {
 		function.addPoint(9, 0);
 		function.addPoint(Double.MAX_VALUE, 0);
 		
-		FuzzyNumber f = function.getFuzzyNumber();
-		Assertions.assertFalse(f.isFuzzyNumber(), "The function should not be a fuzzy number because it has a membership higher than 1, but it is: + " + function.toString());
+		Assertions.assertFalse(function.isFuzzyNumber(), "The function should not be a fuzzy number because it has a membership higher than 1, but it is: + " + function.toString());
+
+		
 	}
+	
+	@Test
+	void testSupport() throws FuzzyOperationException, FuzzyNumberConversionException  {
+		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		function.addPoint(0, 0);
+		function.addPoint(5, 0);
+		function.addPoint(7, 1);
+		function.addPoint(9, 0);
+		function.addPoint(Double.MAX_VALUE, 0);
+		Assertions.assertTrue(function.isFuzzyNumber(), "The function should be a fuzzy number but it isn't + " + function.toString());
+		FuzzyNumber fn = function.getFuzzyNumber(); 
+		Assertions.assertEquals(new ImmutablePair<Double,Double>(5.0,9.0), fn.getSupport());
+		
+		
+
+	}
+	
+	@Test
+	void testCore() throws FuzzyOperationException, FuzzyNumberConversionException  {
+		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		function.addPoint(0, 0);
+		function.addPoint(5, 0);
+		function.addPoint(7, 1);
+		function.addPoint(9, 0);
+		function.addPoint(Double.MAX_VALUE, 0);
+		Assertions.assertTrue(function.isFuzzyNumber(), "The function should be a fuzzy number but it isn't + " + function.toString());
+		FuzzyNumber fn = function.getFuzzyNumber(); 
+		Assertions.assertEquals(new ImmutablePair<Double,Double>(7.0,7.0), fn.getCore());
+		
+		
+
+	}
+	
 	
 }

@@ -21,11 +21,13 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
-public interface FuzzyNumber {
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
-	/**
-	 * @return Whether the object respects the five conditions to be a Fuzzy Number
-	 */
-	boolean isFuzzyNumber();
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
+
+public interface FuzzyNumber extends FuzzyNumberCheck{
+
+  ImmutablePair<Double,Double> getSupport() throws FuzzyOperationException;
+  ImmutablePair<Double,Double> getCore() throws FuzzyOperationException;
 	
 }

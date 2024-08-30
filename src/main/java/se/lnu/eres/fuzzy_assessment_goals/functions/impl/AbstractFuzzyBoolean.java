@@ -19,17 +19,29 @@
  * Contributors: 
  * 		Diego Perez
  */
-package se.lnu.eres.fuzzy_assessment_goals.functions;
+package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
-public interface FuzzyBoolean extends FuzzyNumber{
+public class AbstractFuzzyBoolean extends FuzzyNumberImpl implements FuzzyBoolean {
 
-	
-	/**
-	 * @return Whether the object is a fuzzy number and also respects the two conditions to be a Fuzzy boolean
-	 * @throws FuzzyOperationException 
-	 */
-	boolean isFuzzyBoolean() throws FuzzyOperationException;
-	
+
+	@Override
+	public boolean isFuzzyBoolean() throws FuzzyOperationException {
+		ImmutablePair<Double,Double> support = getSupport();
+		if(support.getLeft()<0) {return false;}
+		if(support.getRight()>1) {return false;}
+		
+		//The following should never happen 
+		
+		if(support.getLeft()>support.getRight()){return false;}
+		
+		return true;
+		
+	}
+
+
 }

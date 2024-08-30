@@ -21,15 +21,11 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
-import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
-public interface FuzzyBoolean extends FuzzyNumber{
+public interface FuzzyNumberCheck {
 
+	boolean isFuzzyNumber();
 	
-	/**
-	 * @return Whether the object is a fuzzy number and also respects the two conditions to be a Fuzzy boolean
-	 * @throws FuzzyOperationException 
-	 */
-	boolean isFuzzyBoolean() throws FuzzyOperationException;
+	
 	
 }

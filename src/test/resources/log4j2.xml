@@ -26,6 +26,12 @@
 			<AppenderRef ref="console_err" />
 		</Logger>
 
+		<Logger
+			name="FuzzyNumberImpl" level="debug" additivity="false">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Logger>
+
 		<Root level="info">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
