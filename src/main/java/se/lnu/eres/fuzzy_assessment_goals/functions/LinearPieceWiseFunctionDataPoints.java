@@ -26,9 +26,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 
 public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair<Double, Double>> {
 
+	private static final Logger Logger = LogManager.getLogger(LinearPieceWiseFunctionDataPoints.class.getSimpleName());
+	
 	private List<ImmutablePair<Double, Double>> datapoints;
 
 	public List<ImmutablePair<Double, Double>> getDatapoints() {
@@ -43,6 +49,13 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 	public LinearPieceWiseFunctionDataPoints(List<ImmutablePair<Double, Double>> datapoints) {
 		super();
 		this.datapoints = datapoints;
+	}
+
+	public LinearPieceWiseFunctionDataPoints(ImmutablePair<Double, Double>... points) {
+		this();
+		for(ImmutablePair<Double, Double> point : points) {
+			datapoints.add(point);
+		}
 	}
 
 	public void add(ImmutablePair<Double, Double> point) {
@@ -79,6 +92,36 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 
 	public ImmutablePair<Double, Double> getLast() {
 		return datapoints.getLast();
+	}
+
+	public List<Double> getXpoints() {
+		List<Double> xPoints = new ArrayList<Double>();
+		for(ImmutablePair<Double, Double> p : datapoints) {
+			xPoints.add(p.getLeft());
+		}
+		return xPoints;
+	}
+
+	public LinearPieceWiseFunctionDataPoints getIntervalContaining(double point) throws FunctionOperationException {
+		
+		ImmutablePair<Double, Double> left=null;
+		boolean isLeftSet=false;
+		
+		for(ImmutablePair<Double, Double> right : datapoints) {
+			if(!isLeftSet) {
+				left=right;
+				isLeftSet=true;
+			}
+			else {
+				if(left.getLeft()<=point && right.getLeft()>point) {
+					Logger.info("Possible problem with the Varargs in the constructor");
+					return new LinearPieceWiseFunctionDataPoints(left,right);
+				}
+				left=right;
+			}
+		}
+		
+		throw new FunctionOperationException("Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 	}
 	
 

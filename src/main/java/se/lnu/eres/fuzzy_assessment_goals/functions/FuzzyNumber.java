@@ -23,6 +23,7 @@ package se.lnu.eres.fuzzy_assessment_goals.functions;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
 public interface FuzzyNumber extends FuzzyNumberCheck {
@@ -32,5 +33,7 @@ public interface FuzzyNumber extends FuzzyNumberCheck {
 	ImmutablePair<Double, Double> getCore() throws FuzzyOperationException;
 
 	LinearPieceWiseFunction getFunction();
+
+	Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException;
 
 }

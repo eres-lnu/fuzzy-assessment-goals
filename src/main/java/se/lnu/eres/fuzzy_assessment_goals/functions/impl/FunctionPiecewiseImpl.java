@@ -21,6 +21,8 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyNumberConversionException;
 
 
@@ -224,6 +227,33 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	@Override
 	public LinearPieceWiseFunctionDataPoints getDatapoints() {
 		return points;
+	}
+
+
+
+	@Override
+	public List<Double> getLimitXpoints() {
+		return points.getXpoints();
+	}
+
+
+
+	@Override
+	public Double getValueAt(double leftXpoint) throws FunctionOperationException {
+		LinearPieceWiseFunctionDataPoints interval = points.getIntervalContaining(leftXpoint);
+		return getY(interval, leftXpoint);
+		
+	}
+
+
+
+	private Double getY(LinearPieceWiseFunctionDataPoints interval, double leftXpoint) {
+		double leftX=interval.getFirst().getLeft();
+		double leftY=interval.getFirst().getRight();
+		double  rightX=interval.getLast().getLeft();
+		double rightY=interval.getLast().getRight();
+		
+		return leftX+((rightY-leftY)/(rightX-leftX)); 
 	}
 
 

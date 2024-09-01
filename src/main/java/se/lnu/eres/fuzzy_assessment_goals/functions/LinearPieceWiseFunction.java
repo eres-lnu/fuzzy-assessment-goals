@@ -21,6 +21,9 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
+import java.util.List;
+
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyNumberConversionException;
 
 public interface LinearPieceWiseFunction extends FuzzyNumberCheck{
@@ -49,4 +52,8 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck{
 	}
 	
 	LinearPieceWiseFunctionDataPoints getDatapoints();
+
+	List<Double> getLimitXpoints();
+
+	Double getValueAt(double leftXpoint) throws FunctionOperationException;
 }

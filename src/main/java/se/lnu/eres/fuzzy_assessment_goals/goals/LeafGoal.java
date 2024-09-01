@@ -23,6 +23,7 @@ package se.lnu.eres.fuzzy_assessment_goals.goals;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 
 public interface LeafGoal {
 
@@ -30,6 +31,6 @@ public interface LeafGoal {
 	
 	boolean isCorrectType();
 	
-	FuzzyBoolean assessSatisfaction(FuzzyNumber observation);
+	FuzzyBoolean assessSatisfaction(FuzzyNumber observation) throws FunctionOperationException;
 	
 }

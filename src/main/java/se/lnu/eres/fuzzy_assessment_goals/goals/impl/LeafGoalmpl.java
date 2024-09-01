@@ -21,10 +21,18 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
+
 
 public class LeafGoalmpl implements LeafGoal {
 
@@ -63,15 +71,52 @@ public class LeafGoalmpl implements LeafGoal {
 	
 	}
 
+	/**
+	 * Uses Zadeh's extension principle B(y) = sup{O(x)|μG (x) = y}, (0 ≤ y ≤ 1) to create the satisfaction function
+	 * @throws FunctionOperationException 
+	 */
 	@Override
-	public FuzzyBoolean assessSatisfaction(FuzzyNumber observation) {
+	public FuzzyBoolean assessSatisfaction(FuzzyNumber observation) throws FunctionOperationException {
 		
 		//Zadeh's principle B(y) = sup{O(x)|μG (x) = y}, (0 ≤ y ≤ 1)
 		
 		//Points of interest: the combination of the points of the observation and the truth values
+		//Using the assumption that the functions are piecewise functions composed of linear functions
 		
-		// TODO Auto-generated method stub
+		List<Double> xPointsOfInterest =  CollectionUtils.collate(truthValue.getFunction().getLimitXpoints(), observation.getFunction().getLimitXpoints());
+		
+		//TODO: First iteration considers only LB or UB goals, that are monotically increasing/decreasing and the same Y value cannot 
+		// happen for x values that are in different pieces in the function. 
+		
+		double leftXpoint=0;
+		boolean assignedLeftXpoint=false;
+		LinearPieceWiseFunctionDataPoints resultInterval = new LinearPieceWiseFunctionDataPoints();
+		for(double rightXPoint : xPointsOfInterest) {
+			if(!assignedLeftXpoint) {
+				leftXpoint=rightXPoint;
+				assignedLeftXpoint=true;
+			}
+			else {
+				resultInterval=	calculateResultInInterval(leftXpoint, rightXPoint, observation);
+				leftXpoint=rightXPoint;
+			}
+		}
+		
 		throw new UnsupportedOperationException();
+	}
+
+	private LinearPieceWiseFunctionDataPoints calculateResultInInterval(double leftXpoint, double rightXpoint,
+			FuzzyNumber observation) throws FunctionOperationException {
+		/*
+		 * It calculates the satisfaction function between points leftXpoint and rightXPoint
+		 */
+		double minY = Math.min(truthValue.getFunctionValueAt(leftXpoint), truthValue.getFunctionValueAt(rightXpoint));
+		double maxY = Math.max(truthValue.getFunctionValueAt(leftXpoint), truthValue.getFunctionValueAt(rightXpoint));
+		//the Y in the input become the X in the output
+		
+		//TODO:Continue here
+		throw new UnsupportedOperationException("not implemented yet");
+
 	}
 
 }

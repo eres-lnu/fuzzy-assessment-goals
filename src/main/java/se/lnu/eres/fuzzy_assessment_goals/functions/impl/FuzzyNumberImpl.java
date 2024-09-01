@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
@@ -133,6 +134,11 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 	@Override
 	public LinearPieceWiseFunction getFunction() {
 		return function;
+	}
+
+	@Override
+	public Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException {
+		return function.getValueAt(leftXpoint);
 	}
 
 }
