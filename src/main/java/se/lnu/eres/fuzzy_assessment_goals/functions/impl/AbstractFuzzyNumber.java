@@ -63,4 +63,10 @@ public abstract class AbstractFuzzyNumber implements FuzzyNumberCheck {
 	}
 
 
+	@Override
+	public String toString() {
+		return "AbstractFuzzyNumber [function=" + function.toString() + "]";
+	}
+
+
 }

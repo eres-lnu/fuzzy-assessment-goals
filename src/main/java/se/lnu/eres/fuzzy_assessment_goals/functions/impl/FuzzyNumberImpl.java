@@ -30,7 +30,6 @@ import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperation
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
-import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
 
 public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber {
 

@@ -21,26 +21,33 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.AbstractFuzzyBoolean;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
-import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.LinearPieceWiseFunctionDataPoints;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
 
 
-public class LeafGoalmpl implements LeafGoal {
+public class LeafGoalImpl implements LeafGoal {
 
+	private static final Logger Logger = LogManager.getLogger(LeafGoalImpl.class.getSimpleName());
+	
 	private final LeafGoalType type;
 	private FuzzyNumber truthValue;
 	
 	
-	public LeafGoalmpl(LeafGoalType type, FuzzyNumber function) {
+	public LeafGoalImpl(LeafGoalType type, FuzzyNumber function) {
 		this.type=type;
 		this.truthValue=function;
 		
@@ -83,8 +90,10 @@ public class LeafGoalmpl implements LeafGoal {
 		//Points of interest: the combination of the points of the observation and the truth values
 		//Using the assumption that the functions are piecewise functions composed of linear functions
 		
-		List<Double> xPointsOfInterest =  CollectionUtils.collate(truthValue.getFunction().getLimitXpoints(), observation.getFunction().getLimitXpoints());
+		List<Double> xPointsOfInterest =  CollectionUtils.collate(truthValue.getFunction().getLimitXpoints(), observation.getFunction().getLimitXpoints(),false);
+
 		
+		Logger.debug("Points of interest in x-axis are: {}", xPointsOfInterest);
 		//TODO: First iteration considers only LB or UB goals, that are monotically increasing/decreasing and the same Y value cannot 
 		// happen for x values that are in different pieces in the function. 
 		
@@ -97,12 +106,15 @@ public class LeafGoalmpl implements LeafGoal {
 				assignedLeftXpoint=true;
 			}
 			else {
-				resultInterval=	calculateResultInInterval(leftXpoint, rightXPoint, observation);
+				Logger.debug("Calculatiung result interval for <leftXpiont,rightXPoint,observation>=<{},{},{}>",leftXpoint, rightXPoint, observation);
+				resultInterval.addAll(	calculateResultInInterval(leftXpoint, rightXPoint, observation));
+				Logger.info("Calculation finished. Current result interval is: {}", resultInterval.toString());
 				leftXpoint=rightXPoint;
 			}
 		}
 		
-		throw new UnsupportedOperationException();
+		return new AbstractFuzzyBoolean(new FunctionPiecewiseImpl(resultInterval));
+
 	}
 
 	private LinearPieceWiseFunctionDataPoints calculateResultInInterval(double leftXpoint, double rightXpoint,
@@ -114,8 +126,23 @@ public class LeafGoalmpl implements LeafGoal {
 		double maxY = Math.max(truthValue.getFunctionValueAt(leftXpoint), truthValue.getFunctionValueAt(rightXpoint));
 		//the Y in the input become the X in the output
 		
-		//TODO:Continue here
-		throw new UnsupportedOperationException("not implemented yet");
+		
+		//returns and interval of the observation
+		LinearPieceWiseFunction intervalFunction = new FunctionPiecewiseImpl();
+		intervalFunction.addPoint(leftXpoint, truthValue.getFunctionValueAt(leftXpoint));
+		intervalFunction.addPoint(rightXpoint, truthValue.getFunctionValueAt(rightXpoint));
+		Logger.debug("Method calculateResultInInterval: Calculated interval function is {}", intervalFunction);
+		LinearPieceWiseFunction inverseIntervalFunction = intervalFunction.getInverse();
+		Logger.debug("Method calculateResultInInterval: Calculated inverse of interval function is {}", inverseIntervalFunction);
+		
+		
+		
+		//Apply B(y)= O(truthValue^(−1)(y))
+		
+		LinearPieceWiseFunctionDataPoints result = new LinearPieceWiseFunctionDataPoints();
+		result.add(new ImmutablePair<Double,Double>(minY,observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(minY))));
+		result.add(new ImmutablePair<Double,Double>(maxY,observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(maxY))));
+		return result;
 
 	}
 

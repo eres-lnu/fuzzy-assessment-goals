@@ -29,10 +29,8 @@ import org.apache.logging.log4j.Logger;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
-import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunctionDataPoints;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyNumberConversionException;
-
 
 public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 
@@ -44,7 +42,10 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		points = new LinearPieceWiseFunctionDataPoints();
 	}
 
-	
+	public FunctionPiecewiseImpl(LinearPieceWiseFunctionDataPoints points) {
+		super();
+		this.points = points;
+	}
 
 	@Override
 	public void addPoint(double x, double y) {
@@ -77,35 +78,21 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		}
 	}
 
-
-	
-
-	@Override
-	public String toString() {
-		return "FunctionPiecewiseImpl [points=" + points.toString() + "]";
-	}
-
 	@Override
 	public FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException {
-		if(FuzzyNumberImpl.IsFuzzyNumber(this)) {
+		if (FuzzyNumberImpl.IsFuzzyNumber(this)) {
 			return new FuzzyNumberImpl(this);
 		}
-		Logger.debug("Trying to converte a PieceWise function to a Fuzzy number, but the function does not satisfy the Fuzzy Number characteristics {}", points.toString());
+		Logger.debug(
+				"Trying to converte a PieceWise function to a Fuzzy number, but the function does not satisfy the Fuzzy Number characteristics {}",
+				points.toString());
 		throw new FuzzyNumberConversionException("Function does not correspond to fuzzy number" + points.toString());
 	}
-
-
 
 	@Override
 	public boolean isFuzzyNumber() {
 		return FuzzyNumberImpl.IsFuzzyNumber(this);
 	}
-
-
-
-
-
-
 
 	@Override
 	public boolean monotonicallyDecreasingFromTopValue() {
@@ -139,11 +126,6 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		return true;
 
 	}
-
-
-
-
-
 
 	@Override
 	public boolean monotonicallyIncreasingUntilReachingTopValue() {
@@ -199,7 +181,6 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		return currentMin;
 	}
 
-	
 	@Override
 	public boolean isMonotonicallyIncreasing() {
 		if (points.size() < 2) {
@@ -218,45 +199,91 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		return true;
 	}
 
-
-
-
-
-
+	@Override
+	public
+	boolean isMonotonicallyDecreasing() {
+		if (points.size() < 2) {
+			return true;
+		}
+		ImmutablePair<Double, Double> previousp = null;
+		for (ImmutablePair<Double, Double> p : points) {
+			if (previousp == null) {
+				previousp = p;
+			} else {
+				if (previousp.getRight() < p.getRight()) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public LinearPieceWiseFunctionDataPoints getDatapoints() {
 		return points;
 	}
 
-
-
 	@Override
 	public List<Double> getLimitXpoints() {
 		return points.getXpoints();
 	}
 
-
-
 	@Override
 	public Double getValueAt(double leftXpoint) throws FunctionOperationException {
+		Logger.debug("Looking for value at {} in function {}", leftXpoint,points);
 		LinearPieceWiseFunctionDataPoints interval = points.getIntervalContaining(leftXpoint);
+		Logger.debug("The interval of interest is {}", interval);
 		return getY(interval, leftXpoint);
-		
+
 	}
-
-
 
 	private Double getY(LinearPieceWiseFunctionDataPoints interval, double leftXpoint) {
-		double leftX=interval.getFirst().getLeft();
-		double leftY=interval.getFirst().getRight();
-		double  rightX=interval.getLast().getLeft();
-		double rightY=interval.getLast().getRight();
 		
-		return leftX+((rightY-leftY)/(rightX-leftX)); 
+		Logger.debug("getY: finding f({}) in interval {}. The x values x1 and x2 are: <{},{}>", leftXpoint, interval, interval.getFirst().getLeft(), interval.getLast().getLeft());
+		/*
+		 * Handle the special case that is the discontinuity. The derivative would give infinite. 
+		 * In tat case, it is assumed that the Y value on the right (the one that will continue the function for)
+		 * larger X values, is used. 
+		 */
+		if(interval.getFirst().getLeft().equals(interval.getLast().getLeft())) {
+			Logger.debug("getY: the f({}) in interval {} is {} (interval had 0 lenght)", leftXpoint, interval, interval.getLast().getRight() );
+			return interval.getLast().getRight();
+		}
+		
+		//Now the normal case
+		double leftX = interval.getFirst().getLeft();
+		double leftY = interval.getFirst().getRight();
+		double rightX = interval.getLast().getLeft();
+		double rightY = interval.getLast().getRight();
+		double result = leftY + (leftXpoint-leftX)*((rightY - leftY) / (rightX - leftX));
+		Logger.debug("getY: the f({}) in interval {} is {}", leftXpoint, interval, result );
+		return result;
 	}
 
+	@Override
+	public LinearPieceWiseFunction getInverse() throws UnsupportedOperationException {
+		if (points.size() > 2) {
+			throw new UnsupportedOperationException(
+					"This method only works for liinear functions defined by two points (x1,y1), (x2,y2)");
+		}
+		LinearPieceWiseFunction result = new FunctionPiecewiseImpl();
+		if (points.getLast().getRight() >= points.getFirst().getRight()) {
+			// non decreasing function (x1,y1),(x2,y2) -> returns (y1,x1),(y2,x2)
+			result.addPoint(points.getFirst().getRight(), points.getFirst().getLeft());
+			result.addPoint(points.getLast().getRight(), points.getLast().getLeft());
+		} else {
+			// decreasing function (x1,y1),(x2,y2) -> returns (y2,x2), (y1,x1)
+			result.addPoint(points.getLast().getRight(), points.getLast().getLeft());
+			result.addPoint(points.getFirst().getRight(), points.getFirst().getLeft());
 
+		}
+		return result;
 
+	}
+
+	@Override
+	public String toString() {
+		return "FunctionPiecewiseImpl [points=" + points.toString() + "]";
+	}
 
 }

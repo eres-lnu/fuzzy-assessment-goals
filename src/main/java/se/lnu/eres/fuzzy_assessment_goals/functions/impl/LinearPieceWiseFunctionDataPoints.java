@@ -19,11 +19,12 @@
  * Contributors: 
  * 		Diego Perez
  */
-package se.lnu.eres.fuzzy_assessment_goals.functions;
+package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
@@ -113,8 +114,8 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 				isLeftSet=true;
 			}
 			else {
-				if(left.getLeft()<=point && right.getLeft()>point) {
-					Logger.info("Possible problem with the Varargs in the constructor");
+				if(left.getLeft()<=point && right.getLeft()>=point) {
+					Logger.info("Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>", point,left,right);
 					return new LinearPieceWiseFunctionDataPoints(left,right);
 				}
 				left=right;
@@ -123,6 +124,30 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		
 		throw new FunctionOperationException("Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 	}
+
+	public void addAll(LinearPieceWiseFunctionDataPoints additionalData) {
+		datapoints.addAll(additionalData.datapoints);
+		
+	}
+
+	@Override
+	public String toString() {
+		return "LinearPieceWiseFunctionDataPoints [datapoints=" + datapoints.toString() + "]";
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LinearPieceWiseFunctionDataPoints other = (LinearPieceWiseFunctionDataPoints) obj;
+		return Objects.equals(datapoints, other.datapoints);
+	}
+	
 	
 
 }
