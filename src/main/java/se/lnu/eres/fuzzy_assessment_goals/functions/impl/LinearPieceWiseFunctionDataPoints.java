@@ -22,6 +22,8 @@
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -147,6 +149,70 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		LinearPieceWiseFunctionDataPoints other = (LinearPieceWiseFunctionDataPoints) obj;
 		return Objects.equals(datapoints, other.datapoints);
 	}
+
+	public void sortByX() {
+		Collections.sort(datapoints, new XPointsComparator());
+		
+	}
+	
+	class XPointsComparator implements Comparator<ImmutablePair<Double,Double>>{
+
+		@Override
+		public int compare(ImmutablePair<Double, Double> o1, ImmutablePair<Double, Double> o2) {
+			//Compares its two arguments for order. Returns a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+			if(o1.getLeft()<o2.getLeft()) {return -1;}
+			if(o1.getLeft().equals(o2.getLeft())) {return 0;}
+			else return 1;
+		}
+		
+	}
+
+	public void retainLargestYforReplicatedX() {
+		//It asumes that the elements are sorted by X
+		List<ImmutablePair<Double, Double>> newDatapoints = new ArrayList<ImmutablePair<Double, Double>>();
+		
+		int datapointsLength=datapoints.size();
+		
+		while(datapointsLength>0) {
+			double currentProcessingX = datapoints.getLast().getLeft();
+			double maxY = getMaximumYforCurrentX(currentProcessingX);
+			
+			//Not good in terms of time complexity, to use addFist when the type is an ArrayList.
+			newDatapoints.addFirst(new ImmutablePair<Double,Double>(currentProcessingX,maxY));
+			removeXvaluesFromLast(currentProcessingX);
+			
+			datapointsLength=datapoints.size();
+		}
+		
+		datapoints=newDatapoints;
+		
+	}
+
+	private void removeXvaluesFromLast(double currentProcessingX) {
+		//Removing from the last because it gives less room to make mess with the indices when iterating.
+		while(datapoints.size()>0 && datapoints.getLast().getLeft().equals(currentProcessingX)) {
+			datapoints.removeLast();
+		}
+		
+	}
+
+	private double getMaximumYforCurrentX(double currentProcessingX) {
+		double maxY = -Double.MAX_VALUE;
+		
+		for(int i = datapoints.size()-1; i>=0; i--) {
+			if(datapoints.get(i).getLeft().equals(currentProcessingX)) {
+				if(datapoints.get(i).getRight()>maxY) {
+					maxY=datapoints.get(i).getRight();
+				}
+			}
+			else {return maxY;}
+			
+		} 
+		return maxY;
+	}
+		
+		
+
 	
 	
 

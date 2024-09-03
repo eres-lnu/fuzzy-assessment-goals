@@ -113,6 +113,9 @@ public class LeafGoalImpl implements LeafGoal {
 			}
 		}
 		
+		//At this point the result interval has several duplicates and is out of order. Clean duplicates and sort.
+		resultInterval.sortByX();
+		resultInterval.retainLargestYforReplicatedX();
 		return new AbstractFuzzyBoolean(new FunctionPiecewiseImpl(resultInterval));
 
 	}
