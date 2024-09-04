@@ -32,6 +32,9 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.math.DoubleMath;
+
+import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 
 public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair<Double, Double>> {
@@ -117,7 +120,7 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 			}
 			else {
 				if(left.getLeft()<=point && right.getLeft()>=point) {
-					Logger.info("Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>", point,left,right);
+					Logger.debug("Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>", point,left,right);
 					return new LinearPieceWiseFunctionDataPoints(left,right);
 				}
 				left=right;
@@ -190,7 +193,7 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 
 	private void removeXvaluesFromLast(double currentProcessingX) {
 		//Removing from the last because it gives less room to make mess with the indices when iterating.
-		while(datapoints.size()>0 && datapoints.getLast().getLeft().equals(currentProcessingX)) {
+		while(datapoints.size()>0 && DoubleMath.fuzzyEquals(datapoints.getLast().getLeft(), currentProcessingX, LinearPieceWiseFunction.TOLERANCE)) {
 			datapoints.removeLast();
 		}
 		
@@ -209,6 +212,36 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 			
 		} 
 		return maxY;
+	}
+
+	public void removeIntermediatePoitnsForLinearFunctions() throws FunctionOperationException {
+		//This function assumes that the datapoints are sorted
+		if(datapoints.size()<3) {return;}
+		ImmutablePair<Double,Double> left, middle, right;
+		
+		
+		left=datapoints.get(0);
+		middle=datapoints.get(1);
+		
+		int i=2;	
+		while(i<datapoints.size()) {
+			right = datapoints.get(i);
+			double yFromFunction = (new FunctionPiecewiseImpl(new LinearPieceWiseFunctionDataPoints(left,right))).getValueAt(middle.getLeft());
+			Logger.info("Trying to remove intermediate point {} between values {} and {}. ", middle, left, right);
+			
+			if(DoubleMath.fuzzyEquals(yFromFunction, middle.getRight(), LinearPieceWiseFunction.TOLERANCE)) {
+			Logger.info("Removing point because the Y at point {} is {} , which is equal to {}", middle.getLeft(), yFromFunction, middle.getRight());
+				datapoints.remove(i-1);
+				middle=right;
+			}
+			else {
+				Logger.info("Leaving point because the Y at point {} is {} , which is NOT equal to {}", middle.getLeft(), yFromFunction, middle.getRight());
+				left=middle;
+				middle=right;
+				i++;
+				}
+		}
+		
 	}
 		
 		

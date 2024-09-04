@@ -87,4 +87,31 @@ class FunctionPiecewiseImplTest {
 		Assertions.assertTrue(function.getValueAt(2.0)==0.0,"The value at 2 should be 0 because it reaches the 0 at 1.89");
 		
 	}
+	
+	@Test
+	void testGetIntersections() throws FunctionOperationException {
+		LinearPieceWiseFunction f1 = new FunctionPiecewiseImpl();
+		f1.addPoint(0, 1);
+		f1.addPoint(7,1);
+		f1.addPoint(8, 0);
+		f1.addPoint(9, 3);
+		f1.addPoint(10, 0);
+		
+		LinearPieceWiseFunction f2 = new FunctionPiecewiseImpl();
+		f2.addPoint(0, 2);
+		f2.addPoint(1, 3);
+		f2.addPoint(2, 3);
+		f2.addPoint(3, 3);
+		f2.addPoint(4, 4);
+		f2.addPoint(5, 4);
+		f2.addPoint(6, 0);
+		f2.addPoint(10, 3);
+		
+		List<Double> intersections = f1.findIntersections(f2);
+		
+		Assertions.assertEquals(4, intersections.size(), "Intersections contents are: " + intersections.toString());
+		System.out.println("Intersections contents are: " + intersections.toString());
+	}
+	
+	
 }

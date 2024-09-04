@@ -28,23 +28,26 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import se.lnu.eres.fuzzy_assessment_goals.functions.impl.AbstractFuzzyBoolean;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FuzzyBooleanImpl;
 import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FunctionPiecewiseImpl;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.impl.LinearPieceWiseFunctionDataPoints;
+import se.lnu.eres.fuzzy_assessment_goals.goals.Goal;
+import se.lnu.eres.fuzzy_assessment_goals.goals.GoalType;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
 import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
 
 
-public class LeafGoalImpl implements LeafGoal {
+public class LeafGoalImpl implements LeafGoal{
 
 	private static final Logger Logger = LogManager.getLogger(LeafGoalImpl.class.getSimpleName());
 	
 	private final LeafGoalType type;
 	private FuzzyNumber truthValue;
+	private FuzzyNumber lastObservation=null;
 	
 	
 	public LeafGoalImpl(LeafGoalType type, FuzzyNumber function) {
@@ -55,7 +58,7 @@ public class LeafGoalImpl implements LeafGoal {
 	}
 
 	@Override
-	public LeafGoalType getType() {
+	public LeafGoalType getLeafType() {
 		return type;
 	}
 
@@ -83,7 +86,7 @@ public class LeafGoalImpl implements LeafGoal {
 	 * @throws FunctionOperationException 
 	 */
 	@Override
-	public FuzzyBoolean assessSatisfaction(FuzzyNumber observation) throws FunctionOperationException {
+	public FuzzyBoolean assessSatisfactionFromObservation(FuzzyNumber observation) throws FunctionOperationException {
 		
 		//Zadeh's principle B(y) = sup{O(x)|μG (x) = y}, (0 ≤ y ≤ 1)
 		
@@ -116,7 +119,7 @@ public class LeafGoalImpl implements LeafGoal {
 		//At this point the result interval has several duplicates and is out of order. Clean duplicates and sort.
 		resultInterval.sortByX();
 		resultInterval.retainLargestYforReplicatedX();
-		return new AbstractFuzzyBoolean(new FunctionPiecewiseImpl(resultInterval));
+		return new FuzzyBooleanImpl(new FunctionPiecewiseImpl(resultInterval));
 
 	}
 
@@ -147,6 +150,35 @@ public class LeafGoalImpl implements LeafGoal {
 		result.add(new ImmutablePair<Double,Double>(maxY,observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(maxY))));
 		return result;
 
+	}
+
+	@Override
+	public GoalType getType() {
+		throw new UnsupportedOperationException("Operation exclusive for intermediate nodes. This is a leaf goal");
+	}
+
+	@Override
+	public List<Goal> getChildren() {
+		throw new UnsupportedOperationException("Operation exclusive for intermediate nodes. This is a leaf goal");
+	}
+
+	@Override
+	public void addChild(Goal child) {
+		throw new UnsupportedOperationException("Operation exclusive for intermediate nodes. This is a leaf goal");
+		
+	}
+
+	@Override
+	public FuzzyBoolean assessSatisfaction() throws FunctionOperationException {
+		if(lastObservation==null) {throw new FunctionOperationException("Impossible to assessSatisfactio() without parameters because the observation null");}
+		return assessSatisfactionFromObservation(lastObservation);
+	}
+
+
+	@Override
+	public void setObservation(FuzzyNumber observation) {
+		lastObservation=observation;
+		
 	}
 
 }

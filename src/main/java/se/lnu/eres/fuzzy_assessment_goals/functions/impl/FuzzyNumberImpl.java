@@ -46,6 +46,13 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 
 	}
 
+
+	@Override
+	public void setFunction(LinearPieceWiseFunction function) {
+		this.function=function;
+		
+	}
+	
 	static public boolean IsFuzzyNumber(LinearPieceWiseFunction function) {
 
 		return (new FuzzyNumberImpl(function)).isFuzzyNumber();
@@ -138,6 +145,11 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 	@Override
 	public Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException {
 		return function.getValueAt(leftXpoint);
+	}
+
+	@Override
+	public double getLargestValueAfterX(double p) throws FunctionOperationException {
+		return function.getLargestValueAfterX(p);
 	}
 
 }

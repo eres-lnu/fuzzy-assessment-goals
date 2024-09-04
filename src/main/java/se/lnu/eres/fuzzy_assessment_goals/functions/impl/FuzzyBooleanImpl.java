@@ -25,17 +25,22 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
-public class AbstractFuzzyBoolean extends FuzzyNumberImpl implements FuzzyBoolean {
+public class FuzzyBooleanImpl extends FuzzyNumberImpl implements FuzzyBoolean {
 
 
-	public AbstractFuzzyBoolean(LinearPieceWiseFunction function) {
+	public FuzzyBooleanImpl(LinearPieceWiseFunction function) {
 		super(function);
+	}
+	
+	public FuzzyBooleanImpl() {
+		super();
 	}
 
 	@Override
-	public boolean isFuzzyBoolean() throws FuzzyOperationException {
+	public boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException  {
 		ImmutablePair<Double,Double> support = getSupport();
 		if(support.getLeft()<0) {return false;}
 		if(support.getRight()>1) {return false;}
@@ -52,6 +57,8 @@ public class AbstractFuzzyBoolean extends FuzzyNumberImpl implements FuzzyBoolea
 	public String toString() {
 		return "AbstractFuzzyBoolean [function=" + function + "]";
 	}
+
+
 	
 	
 

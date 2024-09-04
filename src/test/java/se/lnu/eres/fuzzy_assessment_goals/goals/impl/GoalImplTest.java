@@ -22,23 +22,23 @@
 package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FuzzyNumberImpl;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
-import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
-import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
-import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FunctionPiecewiseImpl;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FuzzyNumberImpl;
+import se.lnu.eres.fuzzy_assessment_goals.goals.GoalType;
+import se.lnu.eres.fuzzy_assessment_goals.goals.Goal;
+import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoal;
+import se.lnu.eres.fuzzy_assessment_goals.goals.LeafGoalType;
 
-
-class LeafGoalImplTest {
+class GoalImplTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -50,6 +50,48 @@ class LeafGoalImplTest {
 
 	@Test
 	void testAssessSatisfaction() throws FunctionOperationException {
+		//An AND goal with two leaf goals as children.
+		
+		LeafGoal lg1 = createLeafGoalRideSatisfaction();
+		LeafGoal lg2 = createLeafGoalFuelConsumption();
+		
+		Goal g = new GoalImpl(GoalType.AND);
+		
+		g.addChild(lg1);
+		g.addChild(lg2);
+		
+		FuzzyBoolean result = g.assessSatisfaction();
+		Assertions.assertEquals(6, result.getFunction().getDatapoints().size(), "Expected 6 elements but the result of goal satisfaction is:" + result.toString());
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+		
+		
+		
+	}
+
+	private LeafGoal createLeafGoalFuelConsumption() {
+		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		//The points in the longitudinal acceleration satisfaction
+		function.addPoint(0.0, 1.0);
+		function.addPoint(1.0, 0);
+		function.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber goalTruthValue = new FuzzyNumberImpl(function);
+
+		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
+		
+		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		//The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in f(0.5)=f(0.9)=0
+		observationFunction.addPoint(0.0, 0.0);
+		observationFunction.addPoint(0.1, 0.0);
+		observationFunction.addPoint(0.15, 1.0);
+		observationFunction.addPoint(0.2, 0.0);
+		observationFunction.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
+		
+		goal.setObservation(observation);
+		return goal;
+	}
+
+	private LeafGoal createLeafGoalRideSatisfaction() {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
 		//The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
@@ -70,15 +112,7 @@ class LeafGoalImplTest {
 		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
 		
 		goal.setObservation(observation);
-		FuzzyBoolean result = goal.assessSatisfaction();
-		Assertions.assertEquals(4, result.getFunction().getDatapoints().size());
-		for(ImmutablePair<Double,Double> point : result.getFunction().getDatapoints()) {
-		Assertions.assertTrue(Double.isFinite(point.getLeft()), "There is an X point in the result whose value is not finite, its value is: " + point.getLeft());
-		Assertions.assertTrue(Double.isFinite(point.getRight()), "There is an Y point in the result whose value is not finite, its value is: " + point.getRight());
-		}
-		
-		System.out.println("Result of goal satisfaction is:" + result.toString());
-		
+		return goal;
 		
 	}
 

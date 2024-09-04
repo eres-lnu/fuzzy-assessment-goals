@@ -25,12 +25,14 @@ import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 
-public interface LeafGoal {
+public interface LeafGoal extends Goal {
 
-	LeafGoalType getType();
+	LeafGoalType getLeafType();
 	
 	boolean isCorrectType();
 	
-	FuzzyBoolean assessSatisfaction(FuzzyNumber observation) throws FunctionOperationException;
+	FuzzyBoolean assessSatisfactionFromObservation(FuzzyNumber observation) throws FunctionOperationException;
+	
+	void setObservation(FuzzyNumber observation);
 	
 }

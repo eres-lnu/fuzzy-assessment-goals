@@ -21,6 +21,7 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
 public interface FuzzyBoolean extends FuzzyNumber{
@@ -29,7 +30,9 @@ public interface FuzzyBoolean extends FuzzyNumber{
 	/**
 	 * @return Whether the object is a fuzzy number and also respects the two conditions to be a Fuzzy boolean
 	 * @throws FuzzyOperationException 
+	 * @throws FunctionOperationException 
 	 */
-	boolean isFuzzyBoolean() throws FuzzyOperationException;
+	boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException;
+
 	
 }

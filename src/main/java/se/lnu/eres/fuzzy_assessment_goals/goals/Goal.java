@@ -19,25 +19,21 @@
  * Contributors: 
  * 		Diego Perez
  */
-package se.lnu.eres.fuzzy_assessment_goals.functions;
+package se.lnu.eres.fuzzy_assessment_goals.goals;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import java.util.List;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
-import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
 
-public interface FuzzyNumber extends FuzzyNumberCheck {
+public interface Goal {
 
-	ImmutablePair<Double, Double> getSupport() throws FuzzyOperationException;
-
-	ImmutablePair<Double, Double> getCore() throws FuzzyOperationException;
-
-	LinearPieceWiseFunction getFunction();
+	GoalType getType();
 	
-	void setFunction(LinearPieceWiseFunction function);
-
-	Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException;
-
-	double getLargestValueAfterX(double p) throws FunctionOperationException;
-
+	List<Goal> getChildren();
+	
+	void addChild(Goal child);
+	
+	FuzzyBoolean assessSatisfaction() throws FunctionOperationException;
+	
 }
