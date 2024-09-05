@@ -49,13 +49,13 @@ class GoalImplTest {
 	}
 
 	@Test
-	void testAssessSatisfaction() throws FunctionOperationException {
+	void testAssessAndSatisfaction() throws FunctionOperationException {
 		//An AND goal with two leaf goals as children.
 		
 		LeafGoal lg1 = createLeafGoalRideSatisfaction();
 		LeafGoal lg2 = createLeafGoalFuelConsumption();
 		
-		Goal g = new GoalImpl(GoalType.AND);
+		Goal g = GoalFactory.CreateGoal(GoalType.AND);
 		
 		g.addChild(lg1);
 		g.addChild(lg2);
@@ -68,6 +68,26 @@ class GoalImplTest {
 		
 	}
 
+	@Test
+	void testAssessOrSatisfaction() throws FunctionOperationException {
+		//An AND goal with two leaf goals as children.
+		
+		LeafGoal lg1 = createLeafGoalRideSatisfaction();
+		LeafGoal lg2 = createLeafGoalFuelConsumption();
+		
+		Goal g = GoalFactory.CreateGoal(GoalType.OR);
+		
+		g.addChild(lg1);
+		g.addChild(lg2);
+		
+		FuzzyBoolean result = g.assessSatisfaction();
+		Assertions.assertEquals(5, result.getFunction().getDatapoints().size(), "Expected 5 elements but the result of goal satisfaction is:" + result.toString());
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+		
+		
+		
+	}
+	
 	private LeafGoal createLeafGoalFuelConsumption() {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
 		//The points in the longitudinal acceleration satisfaction

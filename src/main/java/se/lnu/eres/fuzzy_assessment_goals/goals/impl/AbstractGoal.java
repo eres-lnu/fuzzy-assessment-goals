@@ -34,19 +34,19 @@ import se.lnu.eres.fuzzy_assessment_goals.functions.impl.FuzzyBooleanImpl;
 import se.lnu.eres.fuzzy_assessment_goals.goals.Goal;
 import se.lnu.eres.fuzzy_assessment_goals.goals.GoalType;
 
-public class GoalImpl implements Goal {
+public abstract class AbstractGoal implements Goal {
 
 	private final GoalType type;
 
 	private List<Goal> children;
 
-	public GoalImpl(GoalType type, List<Goal> children) {
+	public AbstractGoal(GoalType type, List<Goal> children) {
 		super();
 		this.type = type;
 		this.children = children;
 	}
 
-	public GoalImpl(GoalType type) {
+	public AbstractGoal(GoalType type) {
 		this(type, new ArrayList<Goal>());
 	}
 
@@ -74,34 +74,16 @@ public class GoalImpl implements Goal {
 		}
 
 		FuzzyBoolean partialResult = children.getFirst().assessSatisfaction();
-		switch (type) {
-		case AND:
-
-			
 			// skip the first
 			for (int i = 1; i < children.size(); i++) {
-				partialResult = assessANDSatisfaction(partialResult, children.get(i).assessSatisfaction());
+				partialResult = assessPartialSatisfaction(partialResult, children.get(i).assessSatisfaction());
 			}
 			return partialResult;
-		case OR:
-
-			// skip the first
-			for (int i = 1; i < children.size(); i++) {
-				partialResult = assessORSatisfaction(partialResult, children.get(i).assessSatisfaction());
-			}
-			return partialResult;
-
-		default:
-			throw new FunctionOperationException("Unknown type of goal");
-		}
-	}
-
-	private FuzzyBoolean assessORSatisfaction(FuzzyBoolean f1, FuzzyBoolean f2) throws FunctionOperationException {
 		
-		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	private FuzzyBoolean assessANDSatisfaction(FuzzyBoolean f1, FuzzyBoolean f2) throws FunctionOperationException {
+
+	private FuzzyBoolean assessPartialSatisfaction(FuzzyBoolean f1, FuzzyBoolean f2) throws FunctionOperationException {
 		//Zadeh's extension principle B(z) = sup {t(B1(x), B2(y))|t(x, y) = z}, 0 ≤ z ≤ 1 (5) x,y∈[0,1], where t-norm is the Min
 
 		//Get x-points of interest from the points of interest of the two fuzzy booleans
@@ -116,13 +98,16 @@ public class GoalImpl implements Goal {
 		//For each point of interests p
 		for(double p : xPointsOfInterest) {
 		
-		//find the largest value f2(x) such that x>p, and save the minimum between<f2(x),f1(p)>
-		double maxYinF2afterP = f2.getLargestValueAfterX(p);
-		double minimum1 = Math.min(f1.getFunctionValueAt(p), maxYinF2afterP);
+		//here it depends whether the goal is of type AND or OR. Find the largest value f2(x) such that x=>p or x<=p,
+		double maxYOfInterestInF2=getLargestValueOfInterestFromFunction(f2,p);
+		//Save the minimum between<f2(x),f1(p)>
+		double minimum1 = Math.min(f1.getFunctionValueAt(p), maxYOfInterestInF2);
 		
+		//here it depends whether the goal is of type AND or OR. Find the largest value f1(x) such that x=>p or x<=p,
+		double maxYOfInterestInF1=getLargestValueOfInterestFromFunction(f1,p);
 		//find the largest value f1(x) such that x>p, and save the minimum between<f1(x),f2(p)>
-		double maxYinF1afterP = f1.getLargestValueAfterX(p);
-		double minimum2 = Math.min(f2.getFunctionValueAt(p), maxYinF1afterP);
+		//double maxYinF1afterP = f1.getLargestValueAfterX(p);
+		double minimum2 = Math.min(f2.getFunctionValueAt(p), maxYOfInterestInF1);
 	
 		//get the maximum of the two values previously saved as m and save <p,m> in the result list;
 		resultFunction.addPoint(p, Math.max(minimum1, minimum2));
@@ -134,4 +119,6 @@ public class GoalImpl implements Goal {
 		resultFunction.simplifyPiecewiseFunction();
 		return new FuzzyBooleanImpl(resultFunction);
 	}
+
+	protected abstract double getLargestValueOfInterestFromFunction(FuzzyBoolean f1, double p) throws FunctionOperationException;
 }

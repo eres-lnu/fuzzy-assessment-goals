@@ -19,27 +19,30 @@
  * Contributors: 
  * 		Diego Perez
  */
-package se.lnu.eres.fuzzy_assessment_goals.functions;
+package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import java.util.ArrayList;
+import java.util.List;
 
+import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
-import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
+import se.lnu.eres.fuzzy_assessment_goals.goals.Goal;
+import se.lnu.eres.fuzzy_assessment_goals.goals.GoalType;
 
-public interface FuzzyNumber extends FuzzyNumberCheck {
+class GoalAndImpl extends AbstractGoal implements Goal {
 
-	ImmutablePair<Double, Double> getSupport() throws FuzzyOperationException;
+	public GoalAndImpl(List<Goal> children) {
+		super(GoalType.AND, children);
+	}
 
-	ImmutablePair<Double, Double> getCore() throws FuzzyOperationException;
+	public GoalAndImpl() {
+		this(new ArrayList<Goal>());
+	}
 
-	LinearPieceWiseFunction getFunction();
-	
-	void setFunction(LinearPieceWiseFunction function);
-
-	Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException;
-
-	double getLargestValueAfterX(double p) throws FunctionOperationException;
-
-	double getLargestValueBeforX(double p)  throws FunctionOperationException;
+	@Override
+	protected double getLargestValueOfInterestFromFunction(FuzzyBoolean f, double p) throws FunctionOperationException {
+		//find the largest value f(x) such that x>p, 
+		return f.getLargestValueAfterX(p);
+	}
 
 }

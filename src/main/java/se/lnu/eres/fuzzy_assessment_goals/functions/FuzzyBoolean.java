@@ -34,5 +34,8 @@ public interface FuzzyBoolean extends FuzzyNumber{
 	 */
 	boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException;
 
+
+
+
 	
 }

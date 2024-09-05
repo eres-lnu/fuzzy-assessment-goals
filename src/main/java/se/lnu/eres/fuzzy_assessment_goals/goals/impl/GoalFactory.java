@@ -19,27 +19,23 @@
  * Contributors: 
  * 		Diego Perez
  */
-package se.lnu.eres.fuzzy_assessment_goals.functions;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
+package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
-import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FuzzyOperationException;
+import se.lnu.eres.fuzzy_assessment_goals.goals.Goal;
+import se.lnu.eres.fuzzy_assessment_goals.goals.GoalType;
 
-public interface FuzzyNumber extends FuzzyNumberCheck {
+public class GoalFactory {
 
-	ImmutablePair<Double, Double> getSupport() throws FuzzyOperationException;
-
-	ImmutablePair<Double, Double> getCore() throws FuzzyOperationException;
-
-	LinearPieceWiseFunction getFunction();
+	public static Goal CreateGoal(GoalType t) throws FunctionOperationException {
+		switch (t) {
+		case AND:
+			return new GoalAndImpl();
+		case OR:
+			return new GoalOrImpl();
+		default:
+			throw new FunctionOperationException("Unknown type of goal");
+	}
 	
-	void setFunction(LinearPieceWiseFunction function);
-
-	Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException;
-
-	double getLargestValueAfterX(double p) throws FunctionOperationException;
-
-	double getLargestValueBeforX(double p)  throws FunctionOperationException;
-
+}
 }

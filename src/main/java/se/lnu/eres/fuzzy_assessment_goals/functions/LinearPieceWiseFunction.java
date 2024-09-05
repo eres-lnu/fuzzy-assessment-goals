@@ -80,4 +80,6 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 			ImmutablePair<Double, Double> f1right) throws FunctionOperationException;
 
 	double getLargestValueAfterX(double p) throws FunctionOperationException;
+
+	double getLargestValueBeforeX(double p) throws FunctionOperationException;
 }
