@@ -22,6 +22,8 @@
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,6 +148,12 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 	public Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException {
 		return function.getValueAt(leftXpoint);
 	}
+	
+	@Override
+	public List<Double> getFunctionValuesAt(double xpoint) throws FunctionOperationException {
+	
+		return function.getValuesAt(xpoint);
+	}
 
 	@Override
 	public double getLargestValueAfterX(double p) throws FunctionOperationException {
@@ -156,5 +164,7 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 	public double getLargestValueBeforX(double p) throws FunctionOperationException {
 		return function.getLargestValueBeforeX(p);
 	}
+
+
 
 }

@@ -21,6 +21,8 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions;
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
@@ -33,13 +35,23 @@ public interface FuzzyNumber extends FuzzyNumberCheck {
 	ImmutablePair<Double, Double> getCore() throws FuzzyOperationException;
 
 	LinearPieceWiseFunction getFunction();
-	
+
 	void setFunction(LinearPieceWiseFunction function);
 
 	Double getFunctionValueAt(double leftXpoint) throws FunctionOperationException;
 
+	/**
+	 * This method allows discontinuities on point x where the y value is different
+	 * when the x is approached left, right, or exactly the point.
+	 * 
+	 * @param leftXpoint
+	 * @return The points y for y=f(x)
+	 * @throws FunctionOperationException
+	 */
+	List<Double> getFunctionValuesAt(double leftXpoint) throws FunctionOperationException;
+
 	double getLargestValueAfterX(double p) throws FunctionOperationException;
 
-	double getLargestValueBeforX(double p)  throws FunctionOperationException;
+	double getLargestValueBeforX(double p) throws FunctionOperationException;
 
 }

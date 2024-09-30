@@ -21,7 +21,6 @@
  */
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +29,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.google.common.math.DoubleMath;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy_assessment_goals.functions.exceptions.FunctionOperationException;
@@ -47,56 +48,60 @@ class FunctionPiecewiseImplTest {
 	@Test
 	void testCheckMonotonicInContinuousDecreasing() {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
-		//The points in the longitudinal acceleration satisfaction
+		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
 		function.addPoint(1.89, 0.0);
 		function.addPoint(Double.MAX_VALUE, 0.0);
-		
-		Assertions.assertTrue(!function.isMonotonicallyIncreasing(), "The function is monotonically decreasing, not increasing " + function.toString());
-		Assertions.assertTrue(function.isMonotonicallyDecreasing(), "The function should be monotonically decreasing " + function.toString());
+
+		Assertions.assertTrue(!function.isMonotonicallyIncreasing(),
+				"The function is monotonically decreasing, not increasing " + function.toString());
+		Assertions.assertTrue(function.isMonotonicallyDecreasing(),
+				"The function should be monotonically decreasing " + function.toString());
 		System.out.println(function.toString());
 	}
-	
+
 	@Test
 	void testgetLimitXpoints() {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
-		//The points in the longitudinal acceleration satisfaction
+		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
 		function.addPoint(1.89, 0.0);
 		function.addPoint(Double.MAX_VALUE, 0.0);
-		List<Double> xpoints= Arrays.asList(0.0,0.56,1.89,Double.MAX_VALUE);
+		List<Double> xpoints = Arrays.asList(0.0, 0.56, 1.89, Double.MAX_VALUE);
 		Assertions.assertEquals(function.getLimitXpoints(), xpoints);
 	}
 
-	
 	@Test
 	void testGetValueAt() throws FunctionOperationException {
 		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
-		//The points in the longitudinal acceleration satisfaction
+		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
 		function.addPoint(1.89, 0.0);
 		function.addPoint(Double.MAX_VALUE, 0.0);
-		Assertions.assertEquals(1.0,function.getValueAt(0.56));
-		Assertions.assertEquals(1.0,function.getValueAt(0.3));
-		Assertions.assertTrue(function.getValueAt(0.6)<1.0,"The value at 0.6 should be lower than 1 because it starts decreasing at 0.56");
-		Assertions.assertTrue(function.getValueAt(0.6)>0.8,"The value at 0.6 should be larger than 0.8 because it does not decrease so quickly from 0.56");
+		Assertions.assertEquals(1.0, function.getValueAt(0.56));
+		Assertions.assertEquals(1.0, function.getValueAt(0.3));
+		Assertions.assertTrue(function.getValueAt(0.6) < 1.0,
+				"The value at 0.6 should be lower than 1 because it starts decreasing at 0.56");
+		Assertions.assertTrue(function.getValueAt(0.6) > 0.8,
+				"The value at 0.6 should be larger than 0.8 because it does not decrease so quickly from 0.56");
 		System.out.println("testGetValueAt: value at 0.6 is " + function.getValueAt(0.6));
-		Assertions.assertTrue(function.getValueAt(2.0)==0.0,"The value at 2 should be 0 because it reaches the 0 at 1.89");
-		
+		Assertions.assertTrue(function.getValueAt(2.0) == 0.0,
+				"The value at 2 should be 0 because it reaches the 0 at 1.89");
+
 	}
-	
+
 	@Test
 	void testGetIntersections() throws FunctionOperationException {
 		LinearPieceWiseFunction f1 = new FunctionPiecewiseImpl();
 		f1.addPoint(0, 1);
-		f1.addPoint(7,1);
+		f1.addPoint(7, 1);
 		f1.addPoint(8, 0);
 		f1.addPoint(9, 3);
 		f1.addPoint(10, 0);
-		
+
 		LinearPieceWiseFunction f2 = new FunctionPiecewiseImpl();
 		f2.addPoint(0, 2);
 		f2.addPoint(1, 3);
@@ -106,12 +111,17 @@ class FunctionPiecewiseImplTest {
 		f2.addPoint(5, 4);
 		f2.addPoint(6, 0);
 		f2.addPoint(10, 3);
-		
+
 		List<Double> intersections = f1.findIntersections(f2);
-		
+
 		Assertions.assertEquals(4, intersections.size(), "Intersections contents are: " + intersections.toString());
+		double[] solution = new double[] { 5.75, 7.14285714, 8.666666, 9.2 };
+		for (int i = 0; i < solution.length; i++) {
+			Assertions.assertTrue(
+					DoubleMath.fuzzyEquals(solution[i], intersections.get(i), LinearPieceWiseFunction.TOLERANCE),
+					"Intersections at position" + i + "is: " + intersections.get(i) + " and they should be: " + solution[i]);
+		}
 		System.out.println("Intersections contents are: " + intersections.toString());
 	}
-	
-	
+
 }

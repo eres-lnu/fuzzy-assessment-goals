@@ -22,6 +22,7 @@
 package se.lnu.eres.fuzzy_assessment_goals.goals.impl;
 
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -135,5 +136,76 @@ class GoalImplTest {
 		return goal;
 		
 	}
+	
+	@Test
+	void testAssessAndSatisfactionDiscontinuousComponent() throws FunctionOperationException {
+		
+		LeafGoal lg1 = createLeafDiscontinuousResult();
+		LeafGoal lg2 = createLeafGoalFuelConsumptionTopIn02Andwidth02();
+		
+		Goal g = GoalFactory.CreateGoal(GoalType.AND);
+		
+		g.addChild(lg1);
+		g.addChild(lg2);
+		
+		FuzzyBoolean result = g.assessSatisfaction();
+		Assertions.assertEquals(7, result.getFunction().getDatapoints().size(), "Expected 7 elements but the result of goal satisfaction is:" + result.toString());
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+	
+
+}
+
+	private LeafGoal createLeafDiscontinuousResult() {
+		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		// The points in the longitudinal acceleration satisfaction
+		function.addPoint(0.0, 1.0);
+		function.addPoint(0.5, 1.0);
+		function.addPoint(1.0, 0.5);
+		function.addPoint(1.5, 0.5);
+		function.addPoint(2.0, 0.0);
+		function.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber goalTruthValue = new FuzzyNumberImpl(function);
+
+		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
+
+		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		// The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in
+		// f(0.5)=f(0.9)=0
+		observationFunction.addPoint(0.0, 0.0);
+		observationFunction.addPoint(0.9, 0.0);
+		observationFunction.addPoint(1.1, 1.0);
+		observationFunction.addPoint(4.0, 0.0);
+		observationFunction.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
+
+		goal.setObservation(observation);
+		return goal;
+		
+
+	}
+	
+	private LeafGoal createLeafGoalFuelConsumptionTopIn02Andwidth02() {
+		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		//The points in the longitudinal acceleration satisfaction
+		function.addPoint(0.0, 1.0);
+		function.addPoint(1.0, 0);
+		function.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber goalTruthValue = new FuzzyNumberImpl(function);
+
+		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
+		
+		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		//The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in f(0.5)=f(0.9)=0
+		observationFunction.addPoint(0.0, 0.0);
+		observationFunction.addPoint(0.2, 0.0);
+		observationFunction.addPoint(0.3, 1.0);
+		observationFunction.addPoint(0.4, 0.0);
+		observationFunction.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
+		
+		goal.setObservation(observation);
+		return goal;
+	}
+
 
 }

@@ -82,4 +82,13 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	double getLargestValueAfterX(double p) throws FunctionOperationException;
 
 	double getLargestValueBeforeX(double p) throws FunctionOperationException;
+
+	/**
+	 * This method allows discontinuities on point x where the y value is different
+	 * when the x is approached left, right, or exactly the point.
+	 * @param xpoint
+	 * @return The list values y for y=f(x)
+	 * @throws FunctionOperationException 
+	 */
+	List<Double> getValuesAt(double xpoint) throws FunctionOperationException;
 }

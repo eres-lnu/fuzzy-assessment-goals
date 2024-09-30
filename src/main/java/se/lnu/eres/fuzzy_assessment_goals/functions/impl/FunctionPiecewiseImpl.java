@@ -22,12 +22,15 @@
 package se.lnu.eres.fuzzy_assessment_goals.functions.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.math.DoubleMath;
 
 import se.lnu.eres.fuzzy_assessment_goals.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy_assessment_goals.functions.LinearPieceWiseFunction;
@@ -234,11 +237,26 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		Logger.debug("Looking for value at {} in function {}", leftXpoint, points);
 		LinearPieceWiseFunctionDataPoints interval = points.getIntervalContaining(leftXpoint);
 		Logger.debug("The interval of interest is {}", interval);
-		return getY(interval, leftXpoint);
+		return GetY(interval, leftXpoint);
 
 	}
 
-	private Double getY(LinearPieceWiseFunctionDataPoints interval, double leftXpoint) {
+	@Override
+	public List<Double> getValuesAt(double xpoint) throws FunctionOperationException {
+		Logger.debug("Looking for values at {} in function {}", xpoint, points);
+		if(isDiscontinuousAtX(xpoint)) {
+			return getDiscontinuousYs(xpoint);
+		}
+		else {
+			Logger.debug("It is not a discontinuity point");
+			return Arrays.asList(getValueAt(xpoint));
+		}
+		
+	}
+	
+
+
+	private static Double GetY(LinearPieceWiseFunctionDataPoints interval, double leftXpoint) {
 
 		Logger.debug("getY: finding f({}) in interval {}. The x values x1 and x2 are: <{},{}>", leftXpoint, interval,
 				interval.getFirst().getLeft(), interval.getLast().getLeft());
@@ -261,6 +279,23 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		double result = leftY + (leftXpoint - leftX) * ((rightY - leftY) / (rightX - leftX));
 		Logger.debug("getY: the f({}) in interval {} is {}", leftXpoint, interval, result);
 		return result;
+	}
+	
+	
+	/**
+	 * The list of Y in case that it is a discontinuity point. It cannot be in the middle of an interval, it must be in the extremes. 
+	 * @param xpoint
+	 * @return
+	 */
+	private List<Double> getDiscontinuousYs(double xpoint) {
+		List<Double> result = new ArrayList<Double>();
+		for (ImmutablePair<Double, Double> point : points) {
+			if(DoubleMath.fuzzyEquals(point.getLeft(), xpoint, TOLERANCE)) {
+				result.add(point.getRight());
+			}
+		}
+		return result;
+			
 	}
 
 	@Override
@@ -314,17 +349,18 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		List<Double> xPointsOfInterest = CollectionUtils.collate(getLimitXpoints(), f2.getLimitXpoints(), false);
 		Logger.info("The xPointsOfInterest merged are: {}", xPointsOfInterest.toString());
 		f1left = points.getFirst();
+		leftXforf2 = xPointsOfInterest.removeFirst();
 		rightXforf2 = xPointsOfInterest.removeFirst();
 		int i = 1;
-		while (i < points.size() &&xPointsOfInterest.size()>0) {
+		while (i < points.size() && xPointsOfInterest.size() >= 0) {
 			f1right = points.get(i);
-			
+
 			// Maybe there are more intersections
-			leftXforf2 = rightXforf2;
-			rightXforf2 = xPointsOfInterest.removeFirst();
+			//leftXforf2 = rightXforf2;
+			//rightXforf2 = xPointsOfInterest.removeFirst();
 
+			// Maybe we are in one fo the
 
-			
 			Logger.info(
 					"finding intersection betwen <x1,y1>={}, <x2,y2>={}, leftXforIntervalInF2={} and rightXforIntervalInF2={}",
 					f1left, f1right, leftXforf2, rightXforf2);
@@ -339,17 +375,22 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 			} else {
 				Logger.info("No, they did not intersect");
 			}
-			
-			
-			// if we reach that the rightXforf2 is out of our f1 interval, advance the
-			// interval in f1
 
-			if (rightXforf2 >= f1right.getLeft()) {
+			if (rightXforf2 >= f1right.getLeft()) { // if we reach that the rightXforf2 is out of our f1 interval,
+													// advance the
+				// interval in f1
 				Logger.info(
 						"It is moment to advance to the next interval in f1 because rightXforf2={} and f1right.getLeft()={}",
 						rightXforf2, f1right.getLeft());
 				f1left = f1right;
 				i++;
+			} else {// advance interval in f2
+					// This is to avoid that the interval in f2 is advanced always because a new
+					// interval in f1 may match the current interval in f2
+				Logger.info(
+						"It is moment to advance to the next interval in f2 because rightXforf2={} and f1right.getLeft()={}",rightXforf2, f1right.getLeft());
+				leftXforf2 = rightXforf2;
+				rightXforf2 = xPointsOfInterest.removeFirst();
 			}
 
 		}
@@ -357,22 +398,106 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	}
 
 	@Override
-	public boolean existsIntersetionBetween(Double left, Double right, ImmutablePair<Double, Double> f1left,
-			ImmutablePair<Double, Double> f1right) throws FunctionOperationException {
-		// To intersect at some point, either the leftY of this is lower and the rightY
+	public boolean existsIntersetionBetween(Double left, Double right, ImmutablePair<Double, Double> f2left,
+			ImmutablePair<Double, Double> f2right) throws FunctionOperationException {
+		// Calculate whether it exists an effective interval for intersection. The
+		// maximum of lefts and miinimum of rights X
+		double effectiveXleft = Math.max(left, f2left.getLeft());
+		double effectiveXright = Math.min(right, f2right.getLeft());
+
+		// If the intervals are disjoint, there is no intersection
+		if (effectiveXright < effectiveXleft) {
+			return false;
+		}
+
+		// If the interavl contains a single point, it is a more difficult case because
+		// it could be a discontinuity point in any of the intervals, "this" or the
+		// interval in the argument points. Or it could be also the only intersection
+		// point.
+		if (effectiveXright == effectiveXleft) {
+			if (left.equals(right) || (f2left.getLeft().equals(f2right.getLeft()))) {
+				return handleIntervalExistenceInSinglePointInterval(effectiveXleft, f2left, f2right);
+			} else {
+				// legit intersection in a single point, no discontinuity of one of the
+				// functions
+				LinearPieceWiseFunctionDataPoints f2 = new LinearPieceWiseFunctionDataPoints(f2left, f2right);
+				return DoubleMath.fuzzyEquals(getValueAt(effectiveXright), GetY(f2, effectiveXright),
+						LinearPieceWiseFunction.TOLERANCE);
+			}
+		}
+
+		// Now the intervals are not disjoint.
+		// To intersect at some point, either the effectiveLeftY of this is lower and
+		// the effectiveRightY
 		// is larger or the leftY of this is larger and the rightY is lower than the
-		// points passed.
+		// interval formed by the points passed.
+		LinearPieceWiseFunctionDataPoints f2 = new LinearPieceWiseFunctionDataPoints(f2left, f2right);
 
 		// If the left is larger and the right lower
-		if (getValueAt(left) >= f1left.getRight() && getValueAt(right) <= f1right.getRight()) {
+		if (getValueAt(effectiveXleft) >= GetY(f2, effectiveXleft)
+				&& getValueAt(effectiveXright) <= GetY(f2, effectiveXright)) {
 			return true;
 		}
 
 		// If the left is lower and the right larger
-		if (getValueAt(left) <= f1left.getRight() && getValueAt(right) >= f1right.getRight()) {
+		if (getValueAt(effectiveXleft) <= GetY(f2, effectiveXleft)
+				&& getValueAt(effectiveXright) >= GetY(f2, effectiveXright)) {
 			return true;
 		}
 
+		return false;
+	}
+
+	private boolean handleIntervalExistenceInSinglePointInterval(double effectiveX,
+			ImmutablePair<Double, Double> f2left, ImmutablePair<Double, Double> f2right)
+			throws FunctionOperationException {
+		if (isDiscontinuousAtX(effectiveX)) {
+			double minYDiscontinuous = getMinYinDiscontinuityAtX(effectiveX);
+			double maxYDiscontinuous = getMaxYinDiscontinuityAtX(effectiveX);
+			double f2YatEffectiveX = GetY(new LinearPieceWiseFunctionDataPoints(f2left, f2right), effectiveX);
+			// true if the f2YatTheEffectiveX is between the minimum and maximum
+			return f2YatEffectiveX >= minYDiscontinuous && f2YatEffectiveX <= maxYDiscontinuous;
+		} else {// the discontinuous is the f2left f2right
+			double minYDiscontinuous = Math.min(f2left.getRight(), f2right.getRight());
+			double maxYDiscontinuous = Math.max(f2left.getRight(), f2right.getRight());
+			double yAtEffectiveX = getValueAt(effectiveX);
+			return yAtEffectiveX >= minYDiscontinuous && yAtEffectiveX <= maxYDiscontinuous;
+
+		}
+	}
+
+	private double getMaxYinDiscontinuityAtX(double xvalue) {
+		double maxYforX = -Double.MAX_VALUE;
+		for (ImmutablePair<Double, Double> point : points) {
+			if (point.getLeft() == xvalue && point.getRight() > maxYforX) {
+				maxYforX = point.getRight();
+			}
+		}
+		return maxYforX;
+	}
+
+	private double getMinYinDiscontinuityAtX(double xvalue) {
+		double minYforX = Double.MAX_VALUE;
+		for (ImmutablePair<Double, Double> point : points) {
+			if (point.getLeft() == xvalue && point.getRight() < minYforX) {
+				minYforX = point.getRight();
+			}
+		}
+		return minYforX;
+
+	}
+
+	private boolean isDiscontinuousAtX(double xvalue) {
+		boolean firstAlreadyFound = false;
+		for (ImmutablePair<Double, Double> point : points) {
+			if (DoubleMath.fuzzyEquals(point.getLeft(),xvalue,TOLERANCE)) {
+				if (firstAlreadyFound) {
+					return true;
+				}
+				firstAlreadyFound = true;
+			}
+
+		}
 		return false;
 	}
 
@@ -392,7 +517,8 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		yl = fleft.getRight();
 		xr = fright.getLeft();
 		yr = fright.getRight();
-		Logger.info("Calculating intersection of <x1,y1>=<{},{}> <x2,y2>=<{},{}>, <xl,yl>=<{},{}> ,<xr,yr>=<{},{}>", x1, y1, x2, y2, xl, yl, xr, yr);
+		Logger.info("Calculating intersection of <x1,y1>=<{},{}> <x2,y2>=<{},{}>, <xl,yl>=<{},{}> ,<xr,yr>=<{},{}>", x1,
+				y1, x2, y2, xl, yl, xr, yr);
 
 		double slope1 = (y2 - y1) / (x2 - x1);
 		double slope2 = (yr - yl) / (xr - xl);
@@ -419,7 +545,8 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		// This can be 0 if both lines are exactly one over the other. Not impossible.
 		double denominator = slope2 - slope1;
 		// If the lines are exactly one over the other, return the rightmost x
-		Logger.info("The calculated b are b1={} b2={}, numerator={}, and denominator={} ", b1, b2, numerator,denominator);
+		Logger.info("The calculated b are b1={} b2={}, numerator={}, and denominator={} ", b1, b2, numerator,
+				denominator);
 		if (denominator != 0.0) {
 			return (numerator / denominator);
 		} else {
@@ -429,42 +556,43 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 
 	@Override
 	public double getLargestValueAfterX(double p) throws FunctionOperationException {
-		double max= getValueAt(p);
-		for(ImmutablePair<Double,Double> point : points) {
-			if(point.getLeft()>p) {
-				//The x value is eligible
-				if(point.getRight()>max) {
-					max=point.getRight();
+		double max = getValueAt(p);
+		for (ImmutablePair<Double, Double> point : points) {
+			if (point.getLeft() > p) {
+				// The x value is eligible
+				if (point.getRight() > max) {
+					max = point.getRight();
 				}
 			}
 		}
 		return max;
-		
+
 	}
 
 	@Override
 	public void simplifyPiecewiseFunction() throws FunctionOperationException {
 		points.removeIntermediatePoitnsForLinearFunctions();
-		
+
 	}
 
 	@Override
 	public double getLargestValueBeforeX(double p) throws FunctionOperationException {
-		double max= getValueAt(p);
-		for(ImmutablePair<Double,Double> point : points) {
-			if(point.getLeft()<p) {
-				//The x value is eligible
-				if(point.getRight()>max) {
-					max=point.getRight();
+		double max = getValueAt(p);
+		for (ImmutablePair<Double, Double> point : points) {
+			if (point.getLeft() < p) {
+				// The x value is eligible
+				if (point.getRight() > max) {
+					max = point.getRight();
 				}
-			}
-			else {
-				//Assuming that the function has the points sorted, 
-				//Once the x is too large, it will be too large also in the next points
+			} else {
+				// Assuming that the function has the points sorted,
+				// Once the x is too large, it will be too large also in the next points
 				return max;
 			}
 		}
 		return max;
 	}
+
+
 
 }

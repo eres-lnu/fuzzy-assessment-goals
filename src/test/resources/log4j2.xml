@@ -27,13 +27,18 @@
 		</Logger>
 
 		<Logger
-			name="FuzzyNumberImpl" level="debug" additivity="false">
+			name="FuzzyNumberImpl" level="info" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
 		
 		<Logger
-			name="LeafGoalImpl" level="debug" additivity="false">
+			name="LeafGoalImpl" level="warn" additivity="false">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Logger>
+		<Logger
+			name="AbstractGoal" level="debug" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
