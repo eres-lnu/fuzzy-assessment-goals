@@ -71,7 +71,7 @@ class GoalImplTest {
 
 	@Test
 	void testAssessOrSatisfaction() throws FunctionOperationException {
-		//An AND goal with two leaf goals as children.
+		//An OR goal with two leaf goals as children.
 		
 		LeafGoal lg1 = createLeafGoalRideSatisfaction();
 		LeafGoal lg2 = createLeafGoalFuelConsumption();
@@ -149,7 +149,7 @@ class GoalImplTest {
 		g.addChild(lg2);
 		
 		FuzzyBoolean result = g.assessSatisfaction();
-		Assertions.assertEquals(7, result.getFunction().getDatapoints().size(), "Expected 7 elements but the result of goal satisfaction is:" + result.toString());
+		Assertions.assertEquals(6, result.getFunction().getDatapoints().size(), "Expected 6 elements but the result of goal satisfaction is:" + result.toString());
 		System.out.println("Result of goal satisfaction is:" + result.toString());
 	
 

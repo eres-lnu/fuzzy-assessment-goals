@@ -244,17 +244,14 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	@Override
 	public List<Double> getValuesAt(double xpoint) throws FunctionOperationException {
 		Logger.debug("Looking for values at {} in function {}", xpoint, points);
-		if(isDiscontinuousAtX(xpoint)) {
+		if (isDiscontinuousAtX(xpoint)) {
 			return getDiscontinuousYs(xpoint);
-		}
-		else {
+		} else {
 			Logger.debug("It is not a discontinuity point");
 			return Arrays.asList(getValueAt(xpoint));
 		}
-		
-	}
-	
 
+	}
 
 	private static Double GetY(LinearPieceWiseFunctionDataPoints interval, double leftXpoint) {
 
@@ -280,22 +277,23 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		Logger.debug("getY: the f({}) in interval {} is {}", leftXpoint, interval, result);
 		return result;
 	}
-	
-	
+
 	/**
-	 * The list of Y in case that it is a discontinuity point. It cannot be in the middle of an interval, it must be in the extremes. 
+	 * The list of Y in case that it is a discontinuity point. It cannot be in the
+	 * middle of an interval, it must be in the extremes.
+	 * 
 	 * @param xpoint
 	 * @return
 	 */
 	private List<Double> getDiscontinuousYs(double xpoint) {
 		List<Double> result = new ArrayList<Double>();
 		for (ImmutablePair<Double, Double> point : points) {
-			if(DoubleMath.fuzzyEquals(point.getLeft(), xpoint, TOLERANCE)) {
+			if (DoubleMath.fuzzyEquals(point.getLeft(), xpoint, TOLERANCE)) {
 				result.add(point.getRight());
 			}
 		}
 		return result;
-			
+
 	}
 
 	@Override
@@ -356,8 +354,8 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 			f1right = points.get(i);
 
 			// Maybe there are more intersections
-			//leftXforf2 = rightXforf2;
-			//rightXforf2 = xPointsOfInterest.removeFirst();
+			// leftXforf2 = rightXforf2;
+			// rightXforf2 = xPointsOfInterest.removeFirst();
 
 			// Maybe we are in one fo the
 
@@ -388,7 +386,8 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 					// This is to avoid that the interval in f2 is advanced always because a new
 					// interval in f1 may match the current interval in f2
 				Logger.info(
-						"It is moment to advance to the next interval in f2 because rightXforf2={} and f1right.getLeft()={}",rightXforf2, f1right.getLeft());
+						"It is moment to advance to the next interval in f2 because rightXforf2={} and f1right.getLeft()={}",
+						rightXforf2, f1right.getLeft());
 				leftXforf2 = rightXforf2;
 				rightXforf2 = xPointsOfInterest.removeFirst();
 			}
@@ -490,7 +489,7 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	private boolean isDiscontinuousAtX(double xvalue) {
 		boolean firstAlreadyFound = false;
 		for (ImmutablePair<Double, Double> point : points) {
-			if (DoubleMath.fuzzyEquals(point.getLeft(),xvalue,TOLERANCE)) {
+			if (DoubleMath.fuzzyEquals(point.getLeft(), xvalue, TOLERANCE)) {
 				if (firstAlreadyFound) {
 					return true;
 				}
@@ -556,7 +555,7 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 
 	@Override
 	public double getLargestValueAfterX(double p) throws FunctionOperationException {
-		double max = getValueAt(p);
+		double max = getValueAt(p); //This returns the maximum if p is a discontinuity point. 
 		for (ImmutablePair<Double, Double> point : points) {
 			if (point.getLeft() > p) {
 				// The x value is eligible
@@ -570,11 +569,37 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	}
 
 	@Override
+	public double getLargestValueAfterX(double p, boolean approachFromLeft) throws FunctionOperationException {
+		if (approachFromLeft) {
+			return getLargestValueAfterX(p);
+		} else {
+			double max = -Double.MAX_VALUE;
+			for (int i = 0; i < points.size(); i++) {
+				ImmutablePair<Double, Double> point = points.get(i);
+				if (DoubleMath.fuzzyEquals(point.getLeft(), p, TOLERANCE)) {
+					// if p is a discontinuity point, the rightmost value in the list is the
+					// eligible
+					max = point.getRight();
+				} else {
+					if (point.getLeft() > p) {
+						// The x value is eligible
+						if (point.getRight() > max) {
+							max = point.getRight();
+						}
+					}
+				}
+			}
+			return max;
+		}
+		
+	}
+
+	@Override
 	public void simplifyPiecewiseFunction() throws FunctionOperationException {
 		points.removeIntermediatePoitnsForLinearFunctions();
 
 	}
- 
+
 	@Override
 	public double getLargestValueBeforeX(double p) throws FunctionOperationException {
 		double max = getValueAt(p);
@@ -592,7 +617,5 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		}
 		return max;
 	}
-
-
 
 }

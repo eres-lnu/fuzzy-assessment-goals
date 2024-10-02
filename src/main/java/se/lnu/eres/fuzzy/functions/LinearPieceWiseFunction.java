@@ -69,7 +69,8 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	 * function removes the datapoints <x_{i+1},y{i+1}> that satisfy
 	 * f(x_{i+1})=y_{i+1} begin f() the linear function created by points
 	 * <xi,yi>,<x_{i+2},y_{i+2}> that are between x1 and x3
-	 * @throws FunctionOperationException 
+	 * 
+	 * @throws FunctionOperationException
 	 */
 	void simplifyPiecewiseFunction() throws FunctionOperationException;
 
@@ -81,14 +82,28 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 
 	double getLargestValueAfterX(double p) throws FunctionOperationException;
 
+	/**
+	 * If p is a point of discontinuity and approachFromLeft=false, only the last
+	 * value value of p is considered (of the three possible values, from left, at
+	 * point p, and from right).
+	 * 
+	 * @param p
+	 * @param approachFromLeft
+	 * @return
+	 * @throws FunctionOperationException 
+	 */
+	double getLargestValueAfterX(double p, boolean approachFromLeft) throws FunctionOperationException;
+
 	double getLargestValueBeforeX(double p) throws FunctionOperationException;
 
 	/**
 	 * This method allows discontinuities on point x where the y value is different
 	 * when the x is approached left, right, or exactly the point.
+	 * 
 	 * @param xpoint
 	 * @return The list values y for y=f(x)
-	 * @throws FunctionOperationException 
+	 * @throws FunctionOperationException
 	 */
 	List<Double> getValuesAt(double xpoint) throws FunctionOperationException;
+
 }
