@@ -77,7 +77,7 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	Double getIntersectionPointX(Double leftLocal, Double rightLocal, ImmutablePair<Double, Double> fleft,
 			ImmutablePair<Double, Double> fright) throws FunctionOperationException;
 
-	boolean existsIntersetionBetween(Double leftXforf2, Double rightXforf2, ImmutablePair<Double, Double> f1left,
+	boolean existsIntersectionBetween(Double leftXforf2, Double rightXforf2, ImmutablePair<Double, Double> f1left,
 			ImmutablePair<Double, Double> f1right) throws FunctionOperationException;
 
 	double getLargestValueAfterX(double p) throws FunctionOperationException;

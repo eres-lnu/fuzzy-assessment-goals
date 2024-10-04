@@ -362,7 +362,7 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 			Logger.info(
 					"finding intersection betwen <x1,y1>={}, <x2,y2>={}, leftXforIntervalInF2={} and rightXforIntervalInF2={}",
 					f1left, f1right, leftXforf2, rightXforf2);
-			if (f2.existsIntersetionBetween(leftXforf2, rightXforf2, f1left, f1right)) {
+			if (f2.existsIntersectionBetween(leftXforf2, rightXforf2, f1left, f1right)) {
 				Logger.info("Yes, they intersect, now calculating the intersection point");
 				// Possibly adding a duplicate if the intersection point corresponds with one
 				// of the picewise function points because it will be added when exploring the
@@ -397,7 +397,7 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 	}
 
 	@Override
-	public boolean existsIntersetionBetween(Double left, Double right, ImmutablePair<Double, Double> f2left,
+	public boolean existsIntersectionBetween(Double left, Double right, ImmutablePair<Double, Double> f2left,
 			ImmutablePair<Double, Double> f2right) throws FunctionOperationException {
 		// Calculate whether it exists an effective interval for intersection. The
 		// maximum of lefts and miinimum of rights X
