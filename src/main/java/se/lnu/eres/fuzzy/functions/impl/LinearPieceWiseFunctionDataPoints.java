@@ -125,7 +125,11 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 				left = right;
 				isLeftSet = true;
 			} else {
-				if (left.getLeft() <= point && right.getLeft() >= point) {
+				if(DoubleMath.fuzzyCompare(left.getLeft(), point, LinearPieceWiseFunction.TOLERANCE)<=0 
+						&&
+					DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE)>=0) {
+					
+				//if (left.getLeft() <= point && right.getLeft() >= point) { //caused problems when the point is almost equal to the bound
 					Logger.debug(
 							"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
 							point, left, right);
@@ -135,8 +139,8 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 			}
 		}
 
-		throw new FunctionOperationException(
-				"Interval for point " + point + " was not found in dataset=" + datapoints.toString());
+	throw new FunctionOperationException("Interval for point "+point+" was not found in dataset="+datapoints.toString());
+
 	}
 
 	public void addAll(LinearPieceWiseFunctionDataPoints additionalData) {
@@ -175,30 +179,29 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		// TODO Auto-generated method stub
 
 		List<ImmutablePair<Double, Double>> newdatapoints = new ArrayList<ImmutablePair<Double, Double>>();
-		
-		while(datapoints.size()>0) {
+
+		while (datapoints.size() > 0) {
 			newdatapoints.addAll(removeLowestXStartingIntervalFromDatapoints());
 		}
-		datapoints=newdatapoints;
+		datapoints = newdatapoints;
 	}
 
 	private List<ImmutablePair<Double, Double>> removeLowestXStartingIntervalFromDatapoints() {
-		int indexSmallestBeginningOfInterval=0;
-		double smallestX=Double.MAX_VALUE;
-		for(int i=0; i<datapoints.size(); i++) {
-			if((i%2)==0) {//Beggining of interval
-				if(datapoints.get(i).getLeft()<smallestX) {
-					smallestX=datapoints.get(i).getLeft();
-					indexSmallestBeginningOfInterval=i;
+		int indexSmallestBeginningOfInterval = 0;
+		double smallestX = Double.MAX_VALUE;
+		for (int i = 0; i < datapoints.size(); i++) {
+			if ((i % 2) == 0) {// Beggining of interval
+				if (datapoints.get(i).getLeft() < smallestX) {
+					smallestX = datapoints.get(i).getLeft();
+					indexSmallestBeginningOfInterval = i;
 				}
 			}
 		}
 		List<ImmutablePair<Double, Double>> result = new ArrayList<ImmutablePair<Double, Double>>();
-		result.addLast(remove(indexSmallestBeginningOfInterval+1));
+		result.addLast(remove(indexSmallestBeginningOfInterval + 1));
 		result.addFirst(remove(indexSmallestBeginningOfInterval));
 		return result;
-		
-		
+
 	}
 
 	class XPointsComparator implements Comparator<ImmutablePair<Double, Double>> {

@@ -160,9 +160,10 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 		return function.getLargestValueAfterX(p,approachFromLeft);
 	}
 
+	
 	@Override
-	public double getLargestValueBeforX(double p) throws FunctionOperationException {
-		return function.getLargestValueBeforeX(p);
+	public double getLargestValueBeforX(double p, boolean approachFromLeft) throws FunctionOperationException {
+		return function.getLargestValueBeforeX(p, approachFromLeft);
 	}
 
 

@@ -618,4 +618,14 @@ public class FunctionPiecewiseImpl implements LinearPieceWiseFunction {
 		return max;
 	}
 
+	@Override
+	public double getLargestValueBeforeX(double p, boolean approachFromLeft) throws FunctionOperationException {
+		if(approachFromLeft) {
+			return getLargestValueBeforeX(p);
+		}
+		//TODO: Continue code for OR
+		return getLargestValueBeforeX(p);
+		
+	}
+
 }

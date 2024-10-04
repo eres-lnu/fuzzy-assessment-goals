@@ -97,6 +97,19 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	double getLargestValueBeforeX(double p) throws FunctionOperationException;
 
 	/**
+	 * If p is a point of discontinuity and approachFromLeft=false, only the last
+	 * value value of p is considered (of the three possible values, from left, at
+	 * point p, and from right).
+	 * 
+	 * @param p
+	 * @param approachFromLeft
+	 * @return
+	 * @throws FunctionOperationException 
+	 */
+	double getLargestValueBeforeX(double p, boolean approachFromLeft) throws FunctionOperationException;
+	
+	
+	/**
 	 * This method allows discontinuities on point x where the y value is different
 	 * when the x is approached left, right, or exactly the point.
 	 * 
@@ -105,5 +118,7 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	 * @throws FunctionOperationException
 	 */
 	List<Double> getValuesAt(double xpoint) throws FunctionOperationException;
+
+
 
 }

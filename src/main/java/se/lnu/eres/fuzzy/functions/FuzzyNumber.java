@@ -52,6 +52,6 @@ public interface FuzzyNumber extends FuzzyNumberCheck {
 
 	double getLargestValueAfterX(double p, boolean strictAfterX) throws FunctionOperationException;
 
-	double getLargestValueBeforX(double p) throws FunctionOperationException;
+	double getLargestValueBeforX(double p, boolean approachFromLeft) throws FunctionOperationException;
 
 }

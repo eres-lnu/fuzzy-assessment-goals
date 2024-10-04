@@ -42,14 +42,14 @@ class GoalAndImpl extends AbstractGoal implements Goal {
 	@Override
 	protected double getLargestValueOfInterestFromFunction(FuzzyBoolean f, double p) throws FunctionOperationException {
 		//find the largest value f(x) such that x>=p, 
-		return f.getLargestValueAfterX(p,false);
+		return f.getLargestValueAfterX(p,true);
 	}
 
 	@Override
 	protected double getLargestValueOfInterestFromFunction(FuzzyBoolean f, double p, boolean approachFromLeft)
 			throws FunctionOperationException {
 		//find the largest value f(x) such that x>p, may be a discontinuity point 
-		return f.getLargestValueAfterX(p,true);
+		return f.getLargestValueAfterX(p,approachFromLeft);
 	}
 
 }
