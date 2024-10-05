@@ -119,28 +119,47 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 
 		ImmutablePair<Double, Double> left = null;
 		boolean isLeftSet = false;
+		LinearPieceWiseFunctionDataPoints candidate = null;
+		boolean isCandidateSet = false;
 
 		for (ImmutablePair<Double, Double> right : datapoints) {
 			if (!isLeftSet) {
 				left = right;
 				isLeftSet = true;
 			} else {
-				if(DoubleMath.fuzzyCompare(left.getLeft(), point, LinearPieceWiseFunction.TOLERANCE)<=0 
-						&&
-					DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE)>=0) {
+				if (DoubleMath.fuzzyCompare(left.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) <= 0
+						&& DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) >= 0) {
+
+					if (isCandidateSet) {// override witht the second and return immediately
+						Logger.debug(
+								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
+								point, left, right);
+						return new LinearPieceWiseFunctionDataPoints(left, right);
+					} 
+					else {
+						Logger.debug(
+								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
+								point, left, right);
+						candidate = new LinearPieceWiseFunctionDataPoints(left, right);
+						isCandidateSet = true;
+					}
+
 					
-				//if (left.getLeft() <= point && right.getLeft() >= point) { //caused problems when the point is almost equal to the bound
-					Logger.debug(
-							"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
-							point, left, right);
-					return new LinearPieceWiseFunctionDataPoints(left, right);
 				}
+
 				left = right;
 			}
 		}
+		if(candidate!=null) {return candidate;}
+		throw new FunctionOperationException(
+				"Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 
-	throw new FunctionOperationException("Interval for point "+point+" was not found in dataset="+datapoints.toString());
-
+	}
+	
+	
+	
+	public LinearPieceWiseFunctionDataPoints getIntervalApproachingFromRightContaining(double point) throws FunctionOperationException {
+		return getIntervalContaining(point);
 	}
 
 	public void addAll(LinearPieceWiseFunctionDataPoints additionalData) {
@@ -283,7 +302,7 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		int i = 2;
 		while (i < datapoints.size()) {
 			right = datapoints.get(i);
-			double yFromFunction = (new FunctionPiecewiseImpl(new LinearPieceWiseFunctionDataPoints(left, right)))
+			double yFromFunction = (new LinearPiecewiseFunctionImpl(new LinearPieceWiseFunctionDataPoints(left, right)))
 					.getValueAt(middle.getLeft());
 			Logger.info("Trying to remove intermediate point {} between values {} and {}. ", middle, left, right);
 
@@ -414,5 +433,7 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		}
 		return smallestY;
 	}
+
+
 
 }
