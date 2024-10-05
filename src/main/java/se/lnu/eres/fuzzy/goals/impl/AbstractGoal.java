@@ -34,7 +34,7 @@ import com.google.common.math.DoubleMath;
 import se.lnu.eres.fuzzy.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
-import se.lnu.eres.fuzzy.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 import se.lnu.eres.fuzzy.functions.impl.FuzzyBooleanImpl;
 import se.lnu.eres.fuzzy.goals.Goal;
 import se.lnu.eres.fuzzy.goals.GoalType;
@@ -90,61 +90,6 @@ public abstract class AbstractGoal implements Goal {
 
 	}
 
-	private FuzzyBoolean assessPartialSatisfaction(FuzzyBoolean f1, FuzzyBoolean f2) throws FunctionOperationException {
-		// Zadeh's extension principle B(z) = sup {t(B1(x), B2(y))|t(x, y) = z}, 0 ≤ z ≤
-		// 1 (5) x,y∈[0,1], where t-norm is the Min
-
-		Logger.debug("Starting assessment of partial satisfaction. Fuzzy booleans are: {}   f1: {} {}   f2: {}", NL,
-				f1.toString(), NL, f2.toString());
-
-		// Get x-points of interest from the points of interest of the two fuzzy
-		// booleans
-		List<Double> xPointsOfInterest = CollectionUtils.collate(f1.getFunction().getLimitXpoints(),
-				f2.getFunction().getLimitXpoints(), false);
-		// Add as point of interest the x values where the fuzzy booleans intersect (the
-		// minimum value passes from belonging to f1 to f2).
-		/* After this, we known that the full interval is either below or above */
-		Logger.debug("The points of interests for X are: {}", xPointsOfInterest.toString());
-		// TODO: find intersections
-		xPointsOfInterest = CollectionUtils.collate(xPointsOfInterest,
-				f1.getFunction().findIntersections(f2.getFunction()), false);
-		Logger.debug("The points of interests after adding the intersections between functions are: {}",
-				xPointsOfInterest.toString());
-
-		LinearPieceWiseFunction resultFunction = new FunctionPiecewiseImpl();
-
-		// For each point of interests p
-		for (double p : xPointsOfInterest) {
-
-			// here it depends whether the goal is of type AND or OR. Find the largest value
-			// f2(x) such that x=>p or x<=p,
-			double maxYOfInterestInF2 = getLargestValueOfInterestFromFunction(f2, p);
-			// Save the minimum between<f2(x),f1(p)>
-			double minimum1 = Math.min(f1.getFunctionValueAt(p), maxYOfInterestInF2);
-
-			// here it depends whether the goal is of type AND or OR. Find the largest value
-			// f1(x) such that x=>p or x<=p,
-			double maxYOfInterestInF1 = getLargestValueOfInterestFromFunction(f1, p);
-			// find the largest value f1(x) such that x>p, and save the minimum
-			// between<f1(x),f2(p)>
-			// double maxYinF1afterP = f1.getLargestValueAfterX(p);
-			double minimum2 = Math.min(f2.getFunctionValueAt(p), maxYOfInterestInF1);
-
-			// get the maximum of the two values previously saved as m and save <p,m> in the
-			// result list;
-			resultFunction.addPoint(p, Math.max(minimum1, minimum2));
-			Logger.debug(
-					"Added point to result function for the point of interest p={}. Now the result function looks like: {}",
-					p, resultFunction.toString());
-		}
-
-		// At this point the result interval has several duplicates and is out of order.
-		// Clean duplicates and sort.
-		resultFunction.getDatapoints().sortByX();
-		resultFunction.getDatapoints().retainLargestYforReplicatedX();
-		resultFunction.simplifyPiecewiseFunction();
-		return new FuzzyBooleanImpl(resultFunction);
-	}
 
 	private FuzzyBoolean assessPartialSatisfactionAllowingDiscontinuous(FuzzyBoolean f1, FuzzyBoolean f2)
 			throws FunctionOperationException {
@@ -168,7 +113,7 @@ public abstract class AbstractGoal implements Goal {
 		Logger.debug("The points of interests after adding the intersections between functions are: {}",
 				xPointsOfInterest.toString());
 
-		LinearPieceWiseFunction resultFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction resultFunction = new LinearPiecewiseFunctionImpl();
 
 		// For each point of interests p
 		for (double p : xPointsOfInterest) {

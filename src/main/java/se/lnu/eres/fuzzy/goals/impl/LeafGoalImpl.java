@@ -34,7 +34,7 @@ import se.lnu.eres.fuzzy.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
-import se.lnu.eres.fuzzy.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 import se.lnu.eres.fuzzy.functions.impl.FuzzyBooleanImpl;
 import se.lnu.eres.fuzzy.functions.impl.LinearPieceWiseFunctionDataPoints;
 import se.lnu.eres.fuzzy.goals.Goal;
@@ -162,7 +162,7 @@ public class LeafGoalImpl implements LeafGoal {
 		resultInterval.addAllSortedInEvenPositions(resultZeroLengthIntervals); //To in odd positions to avoid putting the single point in between the two points of an interval
 		resultInterval.removeDuplicatedNeighborPoints();
 
-		return new FuzzyBooleanImpl(new FunctionPiecewiseImpl(resultInterval));
+		return new FuzzyBooleanImpl(new LinearPiecewiseFunctionImpl(resultInterval));
 
 	}
 
@@ -177,7 +177,7 @@ public class LeafGoalImpl implements LeafGoal {
 		// the Y in the input become the X in the output
 
 		// returns and interval of the observation
-		LinearPieceWiseFunction intervalFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction intervalFunction = new LinearPiecewiseFunctionImpl();
 		intervalFunction.addPoint(leftXpoint, truthValue.getFunctionValueAt(leftXpoint));
 		intervalFunction.addPoint(rightXpoint, truthValue.getFunctionValueAt(rightXpoint));
 		Logger.debug("Method calculateResultInInterval: Calculated interval function is {}", intervalFunction);

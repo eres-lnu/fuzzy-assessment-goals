@@ -32,7 +32,7 @@ import com.google.common.math.DoubleMath;
 import se.lnu.eres.fuzzy.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
-import se.lnu.eres.fuzzy.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 import se.lnu.eres.fuzzy.functions.impl.FuzzyNumberImpl;
 
 import se.lnu.eres.fuzzy.goals.LeafGoal;
@@ -49,7 +49,7 @@ abstract class AbstractGoalImplTest {
 	}
 
 	protected LeafGoal createLeafGoalFuelConsumption() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(1.0, 0);
@@ -58,7 +58,7 @@ abstract class AbstractGoalImplTest {
 
 		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
 
-		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
 		// The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in
 		// f(0.5)=f(0.9)=0
 		observationFunction.addPoint(0.0, 0.0);
@@ -73,7 +73,7 @@ abstract class AbstractGoalImplTest {
 	}
 
 	protected LeafGoal createLeafGoalRideSatisfaction() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
@@ -83,7 +83,7 @@ abstract class AbstractGoalImplTest {
 
 		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
 
-		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
 		// The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in
 		// f(0.5)=f(0.9)=0
 		observationFunction.addPoint(0.0, 0.0);
@@ -100,7 +100,7 @@ abstract class AbstractGoalImplTest {
 
 
 	protected LeafGoal createLeafDiscontinuousResult(double startInc, double peakAt, double finishDec) {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.5, 1.0);
@@ -112,7 +112,7 @@ abstract class AbstractGoalImplTest {
 
 		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
 
-		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
 		// The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in
 		// f(0.5)=f(0.9)=0
 		observationFunction.addPoint(0.0, 0.0);
@@ -128,7 +128,7 @@ abstract class AbstractGoalImplTest {
 	}
 
 	protected LeafGoal createLeafGoalFuelConsumptionTriangularGivenTopValueAndWidth(double topValueAt, double width) {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(1.0, 0);
@@ -137,7 +137,7 @@ abstract class AbstractGoalImplTest {
 
 		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue);
 
-		LinearPieceWiseFunction observationFunction = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
 		// The points in the Observation O2. Triangle with Max in f(0.7)=1 and mins in
 		// f(0.5)=f(0.9)=0
 		observationFunction.addPoint(0.0, 0.0);

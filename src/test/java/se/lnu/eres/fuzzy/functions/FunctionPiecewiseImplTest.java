@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import se.lnu.eres.fuzzy.functions.exceptions.FuzzyNumberConversionException;
 import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
-import se.lnu.eres.fuzzy.functions.impl.FunctionPiecewiseImpl;
+import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 
 class FunctionPiecewiseImplTest {
 
@@ -45,7 +45,7 @@ class FunctionPiecewiseImplTest {
 
 	@Test
 	void testSuccessFuzzyNumber() throws FuzzyNumberConversionException {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
 		function.addPoint(7, 1);
@@ -59,7 +59,7 @@ class FunctionPiecewiseImplTest {
 	
 	@Test
 	void testFailFuzzyNumberForMembershipMoreThan1() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
 		function.addPoint(7, 1.2);
@@ -71,7 +71,7 @@ class FunctionPiecewiseImplTest {
 	
 	@Test
 	void testFailFuzzyNumberForNoMonotonicallyIncreasing() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
 		function.addPoint(5.5, 0.9);
@@ -87,7 +87,7 @@ class FunctionPiecewiseImplTest {
 	
 	@Test
 	void testSupport() throws FuzzyOperationException, FuzzyNumberConversionException  {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
 		function.addPoint(7, 1);
@@ -103,7 +103,7 @@ class FunctionPiecewiseImplTest {
 	
 	@Test
 	void testCore() throws FuzzyOperationException, FuzzyNumberConversionException  {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
 		function.addPoint(7, 1);

@@ -47,7 +47,7 @@ class FunctionPiecewiseImplTest {
 
 	@Test
 	void testCheckMonotonicInContinuousDecreasing() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
@@ -63,7 +63,7 @@ class FunctionPiecewiseImplTest {
 
 	@Test
 	void testgetLimitXpoints() {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
@@ -75,7 +75,7 @@ class FunctionPiecewiseImplTest {
 
 	@Test
 	void testGetValueAt() throws FunctionOperationException {
-		LinearPieceWiseFunction function = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
 		function.addPoint(0.0, 1.0);
 		function.addPoint(0.56, 1.0);
@@ -95,14 +95,14 @@ class FunctionPiecewiseImplTest {
 
 	@Test
 	void testGetIntersections() throws FunctionOperationException {
-		LinearPieceWiseFunction f1 = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction f1 = new LinearPiecewiseFunctionImpl();
 		f1.addPoint(0, 1);
 		f1.addPoint(7, 1);
 		f1.addPoint(8, 0);
 		f1.addPoint(9, 3);
 		f1.addPoint(10, 0);
 
-		LinearPieceWiseFunction f2 = new FunctionPiecewiseImpl();
+		LinearPieceWiseFunction f2 = new LinearPiecewiseFunctionImpl();
 		f2.addPoint(0, 2);
 		f2.addPoint(1, 3);
 		f2.addPoint(2, 3);
