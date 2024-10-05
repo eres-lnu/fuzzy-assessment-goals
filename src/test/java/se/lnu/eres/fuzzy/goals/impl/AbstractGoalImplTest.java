@@ -21,8 +21,6 @@
  */
 package se.lnu.eres.fuzzy.goals.impl;
 
-
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +96,6 @@ abstract class AbstractGoalImplTest {
 
 	}
 
-
 	protected LeafGoal createLeafDiscontinuousResult(double startInc, double peakAt, double finishDec) {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The points in the longitudinal acceleration satisfaction
@@ -150,24 +147,23 @@ abstract class AbstractGoalImplTest {
 		goal.setObservation(observation);
 		return goal;
 	}
-	
+
 	protected void checkFuzzyEquals(double[][] resultXY, FuzzyBoolean result) {
 		Assertions.assertEquals(resultXY.length, result.getFunction().getDatapoints().size());
 		for (int i = 0; i < resultXY.length; i++) {
-			Assertions
-					.assertTrue(
-							DoubleMath.fuzzyEquals(resultXY[i][0], result.getFunction().getDatapoints().get(i).getLeft(),
-									LinearPieceWiseFunction.TOLERANCE),
-							"Unexpected result for X value at position " + i);
+			Assertions.assertTrue(DoubleMath.fuzzyEquals(resultXY[i][0],
+					result.getFunction().getDatapoints().get(i).getLeft(), LinearPieceWiseFunction.TOLERANCE),
+					"Unexpected result for X value at position " + i + " expected:" + resultXY[i][0] + " obtained:"
+							+ result.getFunction().getDatapoints().get(i).getLeft());
 
-			Assertions
-					.assertTrue(
-							DoubleMath.fuzzyEquals(resultXY[i][1], result.getFunction().getDatapoints().get(i).getRight(),
-									LinearPieceWiseFunction.TOLERANCE),
-							"Unexpected result for Y value at position " + i);
+			Assertions.assertTrue(
+					DoubleMath.fuzzyEquals(resultXY[i][1], result.getFunction().getDatapoints().get(i).getRight(),
+							LinearPieceWiseFunction.TOLERANCE),
+					"Unexpected result for Y value at position " + i + " expected:" + resultXY[i][1] + " obtained:"
+							+ result.getFunction().getDatapoints().get(i).getRight());
 
 		}
-		
+
 	}
 
 }

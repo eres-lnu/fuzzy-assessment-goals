@@ -612,7 +612,7 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 	public double getLargestValueAfterX(double p) throws FunctionOperationException {
 		double max = getValueAt(p); // This returns the maximum if p is a discontinuity point.
 		for (ImmutablePair<Double, Double> point : points) {
-			if (point.getLeft() > p) {
+			if (point.getLeft() >= p) {
 				// The x value is eligible
 				if (point.getRight() > max) {
 					max = point.getRight();

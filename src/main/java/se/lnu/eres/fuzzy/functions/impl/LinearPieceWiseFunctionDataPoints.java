@@ -130,36 +130,52 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 				if (DoubleMath.fuzzyCompare(left.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) <= 0
 						&& DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) >= 0) {
 
-					if (isCandidateSet) {// override witht the second and return immediately
-						Logger.debug(
-								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
-								point, left, right);
-						return new LinearPieceWiseFunctionDataPoints(left, right);
-					} 
-					else {
-						Logger.debug(
-								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
-								point, left, right);
-						candidate = new LinearPieceWiseFunctionDataPoints(left, right);
-						isCandidateSet = true;
-					}
+					return new LinearPieceWiseFunctionDataPoints(left, right);
+//					if (isCandidateSet) {// override witht the second and return immediately
+//						Logger.debug(
+//								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
+//								point, left, right);
+//						return new LinearPieceWiseFunctionDataPoints(left, right);
+//					} else {
+//						Logger.debug(
+//								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
+//								point, left, right);
+//						candidate = new LinearPieceWiseFunctionDataPoints(left, right);
+//						isCandidateSet = true;
+//					}
 
-					
 				}
 
 				left = right;
 			}
 		}
-		if(candidate!=null) {return candidate;}
+		if (candidate != null) {
+			return candidate;
+		}
 		throw new FunctionOperationException(
 				"Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 
 	}
-	
-	
-	
-	public LinearPieceWiseFunctionDataPoints getIntervalApproachingFromRightContaining(double point) throws FunctionOperationException {
-		return getIntervalContaining(point);
+
+	public LinearPieceWiseFunctionDataPoints getIntervalApproachingFromRightContaining(double point)
+			throws FunctionOperationException {
+		if (datapoints.size() < 2) {
+			throw new FunctionOperationException("Size of datapoints is not large enough to create an interval");
+		}
+		ImmutablePair<Double, Double> right = null;
+		ImmutablePair<Double, Double> left = datapoints.get(datapoints.size()-1);
+		for (int i=datapoints.size()-2; i>=0; i--) {
+			right = left;
+			left= datapoints.get(i);
+			if (DoubleMath.fuzzyCompare(left.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) <= 0
+					&& DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) >= 0) {
+				
+			//Found interval
+				return new LinearPieceWiseFunctionDataPoints(left, right);
+			}
+		}
+		throw new FunctionOperationException(
+				"Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 	}
 
 	public void addAll(LinearPieceWiseFunctionDataPoints additionalData) {
@@ -433,7 +449,5 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		}
 		return smallestY;
 	}
-
-
 
 }

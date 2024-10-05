@@ -21,7 +21,7 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="FunctionPiecewiseImpl" level="debug" additivity="false">
+		<Logger name="LinearPiecewiseFunctionImpl" level="info" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>

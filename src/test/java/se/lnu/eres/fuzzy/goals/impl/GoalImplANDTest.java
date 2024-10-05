@@ -159,7 +159,10 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 		Assertions.assertEquals(6, result.getFunction().getDatapoints().size(),
 				"Expected 6 elements but the result of goal satisfaction is:" + result.toString());
 		System.out.println("Result of goal satisfaction is:" + result.toString());
-
+		double resultXY[][] = new double[][] {{0.0,0.68965}, {0.5,0.86206}, {0.5,1.0}, {0.5,0.333333}, {0.55,0.0}, {1,0}};
+		checkFuzzyEquals(resultXY, result);
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+		
 	}
 
 

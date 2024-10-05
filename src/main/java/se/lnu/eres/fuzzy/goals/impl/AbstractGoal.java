@@ -123,6 +123,7 @@ public abstract class AbstractGoal implements Goal {
 			double maxYOfInterestInF2 = getLargestValueOfInterestFromFunction(f2, p, true);
 			// f1(p) may have multiple values:
 			List<Double> f1ValuesAtP = f1.getFunctionValuesAt(p);
+			Logger.debug("   For point {}, the maxYOfInterestInF2={} and the f1 values at the point are:{}",p,maxYOfInterestInF2,f1ValuesAtP.toString());
 			// Save the minimums between<f2(x),severalf1(p)>
 			// List<Double> minimums1 = new ArrayList<Double>();
 			// f1ValuesAtP.forEach((d) -> {minimums1.add( Math.min(d,
@@ -133,7 +134,7 @@ public abstract class AbstractGoal implements Goal {
 
 			// here it depends whether the goal is of type AND or OR. Find the largest value
 			// f1(x) such that x=>p or x<=p,
-			double maxYOfInterestInF1 = getLargestValueOfInterestFromFunction(f1, p);
+			double maxYOfInterestInF1 = getLargestValueOfInterestFromFunction(f1, p, true);
 			// f2(p) may have multiple values
 			List<Double> f2ValuesAtP = f2.getFunctionValuesAt(p);
 			// Save the minimums between<several2(x),f1(p)>
@@ -173,7 +174,7 @@ public abstract class AbstractGoal implements Goal {
 		// IT is a discontinuity point in f2 if the value is different depending on
 		// whether it is approached from the right
 
-		if (minimums.size() > 1 && (DoubleMath.fuzzyEquals(maxYOfInterestInF2ApproachingFromRight, maxYOfInterestInF2,
+		if (minimums.size() > 1 && (!DoubleMath.fuzzyEquals(maxYOfInterestInF2ApproachingFromRight, maxYOfInterestInF2,
 				LinearPieceWiseFunction.TOLERANCE))) { // Both are discontinuity
 
 			Logger.debug(
