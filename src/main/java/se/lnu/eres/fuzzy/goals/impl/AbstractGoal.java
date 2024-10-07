@@ -163,32 +163,7 @@ public abstract class AbstractGoal implements Goal {
 		return new FuzzyBooleanImpl(resultFunction);
 	}
 
-	private List<Double> setMinimums(List<Double> f1ValuesAtP, double maxYOfInterestInF2,
-			double maxYOfInterestInF2ApproachingFromRight) {
-		List<Double> minimums = f1ValuesAtP.stream().map(d -> Math.min(d, maxYOfInterestInF2))
-				.collect(Collectors.toList());
-		// If both were discontinuity points, set the last of minimums using
-		// maxYOfInterestInF2ApproachingFromRight
 
-		// It is a discontinuity point in f1 if the size of the list is >1
-		// IT is a discontinuity point in f2 if the value is different depending on
-		// whether it is approached from the right
-
-		if (minimums.size() > 1 && (!DoubleMath.fuzzyEquals(maxYOfInterestInF2ApproachingFromRight, maxYOfInterestInF2,
-				LinearPieceWiseFunction.TOLERANCE))) { // Both are discontinuity
-
-			Logger.debug(
-					"The minimums of a discontinuous function are going to change. Input was f:{}, maximum values in f2 were: {}, {}",
-					f1ValuesAtP.toString(), maxYOfInterestInF2, maxYOfInterestInF2ApproachingFromRight);
-			double lastMinimum =minimums.removeLast();
-			Logger.debug("The last value of the list of minimus was:{}", lastMinimum);
-			
-			minimums.addLast(Math.min(f1ValuesAtP.get( f1ValuesAtP.size() - 1), maxYOfInterestInF2ApproachingFromRight));
-
-		}
-		return minimums;
-
-	}
 
 	/**
 	 * Returns the largest value of interest from function "f", which is the largest
@@ -208,4 +183,7 @@ public abstract class AbstractGoal implements Goal {
 
 	protected abstract double getLargestValueOfInterestFromFunction(FuzzyBoolean f1, double p)
 			throws FunctionOperationException;
+
+	protected abstract List<Double> setMinimums(List<Double> f1ValuesAtP, double maxYOfInterestInF2,
+			double maxYOfInterestInF2ApproachingFromRight);
 }

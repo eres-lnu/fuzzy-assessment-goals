@@ -658,6 +658,7 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 	@Override
 	public double getLargestValueBeforeX(double p) throws FunctionOperationException {
 		double max = getValueAt(p);
+		Logger.debug("     getLargestValueBeforeX() - for p={}, initial maximum found is value is:{}",p, max);
 		for (ImmutablePair<Double, Double> point : points) {
 			if (point.getLeft() < p) {
 				// The x value is eligible
@@ -678,8 +679,21 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 		if (approachFromLeft) {
 			return getLargestValueBeforeX(p);
 		}
-		// TODO: Continue code for OR
-		return getLargestValueBeforeX(p);
+		double max = getValueAt(p);
+		Logger.debug("     getLargestValueBeforeX() approaching from the right, so all values for f/p) are considered - for p={}, initial maximum found is value is:{}",p, max);
+		for (ImmutablePair<Double, Double> point : points) {
+			if (point.getLeft() <= p) {
+				// The x value is eligible
+				if (point.getRight() > max) {
+					max = point.getRight();
+				}
+			} else {
+				// Assuming that the function has the points sorted,
+				// Once the x is too large, it will be too large also in the next points
+				return max;
+			}
+		}
+		return max;
 
 	}
 

@@ -86,5 +86,26 @@ class GoalImplORTest extends AbstractGoalImplTest {
 		System.out.println("Result of goal satisfaction is:" + result.toString());
 
 	}
+	
+	@Test
+	void testAssessOrSatisfactionDoubleDiscontinuousTriplePoint() throws FunctionOperationException {
+
+		LeafGoal lg1 = createLeafDiscontinuousResult(0.9, 1.1, 4.0);
+		LeafGoal lg2 = createLeafDiscontinuousResult(0.95, 1.1, 3.0);
+
+		Goal g = GoalFactory.CreateGoal(GoalType.OR);
+
+		g.addChild(lg1);
+		g.addChild(lg2);
+
+		FuzzyBoolean result = g.assessSatisfaction();
+		Assertions.assertEquals(6, result.getFunction().getDatapoints().size(),
+				"Expected 6 elements but the result of goal satisfaction is:" + result.toString());
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+		double resultXY[][] = new double[][] {{0.0,0.5263157}, {0.5,0.789473}, {0.5,1.0}, {0.5,0.5}, {0.6,0.0}, {1,0}};
+		checkFuzzyEquals(resultXY, result);
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+		
+	}
 
 }
