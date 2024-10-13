@@ -100,7 +100,7 @@ class PlotterTest {
 
 	@Test
 	void TestLeafGoalFullDissatisfaction() {
-		Plotter p = new Plotter("Leaf goal");
+		Plotter p = new Plotter("Full dissatisfaction");
 		double xy[][] = new double[][] { { 0.0, 1 }, { 0.0, 0 }, { 1, 0 } };
 
 		LinearPieceWiseFunction f = new LinearPiecewiseFunctionImpl();
@@ -114,7 +114,42 @@ class PlotterTest {
 
 		Assertions.assertNotNull(p);
 	}
+	
+	@Test
+	void TestSinglePoint() {
+		Plotter p = new Plotter("Single point");
+		double xy[][] = new double[][] { { 0.0, 1 }};
 
+		LinearPieceWiseFunction f = new LinearPiecewiseFunctionImpl();
+		for (int i = 0; i < xy.length; i++) {
+			f.addPoint(xy[i][0], xy[i][1]);
+		}
+		p.addDatasetFromFunction(f);
+		p.showPlot();
+
+		
+
+		Assertions.assertNotNull(p);
+	}
+
+	@Test
+	void TestTwoPoints() {
+		Plotter p = new Plotter("Two points");
+		double xy[][] = new double[][] { { 0.0, 1 }, { 0.0, 0 }};
+
+		LinearPieceWiseFunction f = new LinearPiecewiseFunctionImpl();
+		for (int i = 0; i < xy.length; i++) {
+			f.addPoint(xy[i][0], xy[i][1]);
+		}
+		p.addDatasetFromFunction(f);
+		p.showPlot();
+
+		
+
+		Assertions.assertNotNull(p);
+	}
+	
+	
 	@Test
 	void TestLeafGoalFullSatisfaction() {
 		Plotter p = new Plotter("Leaf goal");
