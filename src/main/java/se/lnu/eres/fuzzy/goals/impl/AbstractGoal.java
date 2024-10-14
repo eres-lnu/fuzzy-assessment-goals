@@ -23,13 +23,10 @@ package se.lnu.eres.fuzzy.goals.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.google.common.math.DoubleMath;
 
 import se.lnu.eres.fuzzy.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
@@ -90,7 +87,6 @@ public abstract class AbstractGoal implements Goal {
 
 	}
 
-
 	private FuzzyBoolean assessPartialSatisfactionAllowingDiscontinuous(FuzzyBoolean f1, FuzzyBoolean f2)
 			throws FunctionOperationException {
 		// Zadeh's extension principle B(z) = sup {t(B1(x), B2(y))|t(x, y) = z}, 0 ≤ z ≤
@@ -123,7 +119,8 @@ public abstract class AbstractGoal implements Goal {
 			double maxYOfInterestInF2 = getLargestValueOfInterestFromFunction(f2, p, true);
 			// f1(p) may have multiple values:
 			List<Double> f1ValuesAtP = f1.getFunctionValuesAt(p);
-			Logger.debug("   For point {}, the maxYOfInterestInF2={} and the f1 values at the point are:{}",p,maxYOfInterestInF2,f1ValuesAtP.toString());
+			Logger.debug("   For point {}, the maxYOfInterestInF2={} and the f1 values at the point are:{}", p,
+					maxYOfInterestInF2, f1ValuesAtP.toString());
 			// Save the minimums between<f2(x),severalf1(p)>
 			// List<Double> minimums1 = new ArrayList<Double>();
 			// f1ValuesAtP.forEach((d) -> {minimums1.add( Math.min(d,
@@ -158,12 +155,10 @@ public abstract class AbstractGoal implements Goal {
 		// At this point the result interval has several duplicates and is out of order.
 		// Clean duplicates and sort.
 		resultFunction.getDatapoints().sortByX();
-		//resultFunction.getDatapoints().retainLargestYforReplicatedX();
+		// resultFunction.getDatapoints().retainLargestYforReplicatedX();
 		resultFunction.simplifyPiecewiseFunction();
 		return new FuzzyBooleanImpl(resultFunction);
 	}
-
-
 
 	/**
 	 * Returns the largest value of interest from function "f", which is the largest

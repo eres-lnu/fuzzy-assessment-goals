@@ -9,13 +9,11 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-//import org.jfree.ui.ApplicationFrame;
-//import org.jfree.ui.RefineryUtilities;
+
 
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.impl.LinearPieceWiseFunctionDataPoints;
@@ -32,12 +30,13 @@ import java.io.OutputStream;
 
 public class Plotter {
 
-	private static final long serialVersionUID = 1L;
+
 	private JFrame frame;
 	private ChartPanel chartPanel;
 	private JFreeChart lineChart;
 	private XYSeriesCollection dataset;
 	private XYLineAndShapeRenderer renderer;
+
 
 	public Plotter(String applicationTitle) {
 		// super(applicationTitle);
@@ -78,14 +77,15 @@ public class Plotter {
 
 	}
 
-	private Shape circle = new Ellipse2D.Double(-6.0, -6.0, 6.0, 6.0);
-	private Shape circlesmall = new Ellipse2D.Double(-1.0, -1.0, 1.0, 1.0);
+	private Shape circle = new Ellipse2D.Double(-3.0, -3.0, 6.0, 6.0);
+	private Shape circlesmall = new Ellipse2D.Double(-0.5, -0.5, 1.0, 1.0);
 
 	public void addDatasetFromFunction(LinearPieceWiseFunction function) {
 
 		dataset = new XYSeriesCollection();
 		renderer = new XYLineAndShapeRenderer();
-
+		lineChart = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+		
 		LinearPieceWiseFunctionDataPoints points = function.getDatapoints();
 		XYSeries series = new XYSeries("s1");
 		int seriesIdx = 0;
@@ -96,9 +96,12 @@ public class Plotter {
 		series.add(points.get(0).getLeft(), points.get(0).getRight());
 		if (points.size() == 1) {
 			renderer.setSeriesShape(seriesIdx, circle);
-		} else {// If the first one is a discontinuity, it is the actual value
+		} else {
 			if (points.get(1).getLeft().equals(points.get(0).getLeft())) {
+				// If the first one is a discontinuity, it is the actual value
 				renderer.setSeriesShape(seriesIdx, circle);
+				//And move the x-axis a bit to the left to graphically show better the value
+				lineChart.getXYPlot().getDomainAxis().setRange(points.get(0).getLeft()-0.025, points.getLast().getLeft()+0.025);
 			}
 
 			// The rest of points
@@ -108,8 +111,9 @@ public class Plotter {
 					// Discontinuity
 
 					// A new series
-					series = new XYSeries("s" + (i + 1));
 					seriesIdx++;
+					series = new XYSeries("s" + (seriesIdx + 1));
+					
 					dataset.addSeries(series);
 					// With smallcircles
 					renderer.setSeriesPaint(i, Color.RED);
@@ -132,7 +136,7 @@ public class Plotter {
 			}
 		}
 
-		lineChart = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
+		
 		lineChart.getXYPlot().setRenderer(renderer);
 		chartDisplayCharacteristics();
 	}
