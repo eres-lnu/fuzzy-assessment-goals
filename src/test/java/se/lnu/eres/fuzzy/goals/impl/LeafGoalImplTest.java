@@ -85,8 +85,8 @@ class LeafGoalImplTest {
 		double[] x = new double[]{0, 0.74436, 0.894736, 1.0};
 		double[] y = new double[]{0, 0, 1.0, 0.3};
 		for(int i=0; i<x.length;i++) {
-			Assertions.assertTrue(DoubleMath.fuzzyEquals(x[i], result.getFunction().getDatapoints().get(i).getLeft(), LinearPieceWiseFunction.TOLERANCE));
-			Assertions.assertTrue(DoubleMath.fuzzyEquals(y[i], result.getFunction().getDatapoints().get(i).getRight(), LinearPieceWiseFunction.TOLERANCE));
+			Assertions.assertTrue(DoubleMath.fuzzyEquals(x[i], result.getFunction().getDatapoints().get(i).getLeft(), LinearPieceWiseFunction.TOLERANCE), "expected/observed"+x[i]+"/"+result.getFunction().getDatapoints().get(i).getLeft());
+			Assertions.assertTrue(DoubleMath.fuzzyEquals(y[i], result.getFunction().getDatapoints().get(i).getRight(), LinearPieceWiseFunction.TOLERANCE), "expected/observed"+y[i]+"/"+ result.getFunction().getDatapoints().get(i).getRight());
 		}
 		
 	}
@@ -129,6 +129,90 @@ class LeafGoalImplTest {
 		System.out.println("Result of goal satisfaction is:" + result.toString());
 
 	}
+	
+	
+	@Test
+	void testAssessFullSatisfactionSinglePointObersevation() throws FunctionOperationException {
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
+		// The points in the longitudinal acceleration satisfaction
+		function.addPoint(0.0, 1.0);
+		function.addPoint(0.56, 1.0);
+		function.addPoint(1.89, 0.0);
+		function.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber goalTruthValue = new FuzzyNumberImpl(function);
+
+		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue, "Complete satisfaction with single point observation");
+
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
+		
+		observationFunction.addPoint(0.0, 1.0);
+		//observationFunction.addPoint(0.005, 1.0);
+		observationFunction.addPoint(0.0, 0.0);
+		observationFunction.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
+
+		goal.setObservation(observation);
+		FuzzyBoolean result = goal.assessSatisfaction();
+		Assertions.assertEquals(3, result.getFunction().getDatapoints().size(), "Result of goal satisfaction is:" + result.toString());
+		for (ImmutablePair<Double, Double> point : result.getFunction().getDatapoints()) {
+			Assertions.assertTrue(Double.isFinite(point.getLeft()),
+					"There is an X point in the result whose value is not finite, its value is: " + point.getLeft());
+			Assertions.assertTrue(Double.isFinite(point.getRight()),
+					"There is an Y point in the result whose value is not finite, its value is: " + point.getRight());
+		}
+		Assertions.assertEquals(result.getFunction().getDatapoints().get(0), new ImmutablePair<Double,Double>(0.0,0.0));
+		Assertions.assertEquals(result.getFunction().getDatapoints().get(1), new ImmutablePair<Double,Double>(1.0,0.0));
+		Assertions.assertEquals(result.getFunction().getDatapoints().get(2), new ImmutablePair<Double,Double>(1.0,1.0));
+
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+
+	}
+
+	
+	@Test
+	void testAssessAlmostFullSatisfactionLinearDecrement() throws FunctionOperationException {
+		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
+
+		function.addPoint(0.0, 1.0);
+		//function.addPoint(0.1, 1.0);
+		function.addPoint(1.0, 0);
+		function.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber goalTruthValue = new FuzzyNumberImpl(function);
+
+		LeafGoal goal = new LeafGoalImpl(LeafGoalType.UB, goalTruthValue, "Point all satisfied linear decrement");
+
+		LinearPieceWiseFunction observationFunction = new LinearPiecewiseFunctionImpl();
+		observationFunction.addPoint(0.0, 1.0);
+		observationFunction.addPoint(0.005, 0.0);
+		observationFunction.addPoint(Double.MAX_VALUE, 0.0);
+		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
+
+		goal.setObservation(observation);
+		FuzzyBoolean result = goal.assessSatisfaction();
+		Assertions.assertEquals(3, result.getFunction().getDatapoints().size(), "Result of goal satisfaction is:" + result.toString());
+		for (ImmutablePair<Double, Double> point : result.getFunction().getDatapoints()) {
+			Assertions.assertTrue(Double.isFinite(point.getLeft()),
+					"There is an X point in the result whose value is not finite, its value is: " + point.getLeft());
+			Assertions.assertTrue(Double.isFinite(point.getRight()),
+					"There is an Y point in the result whose value is not finite, its value is: " + point.getRight());
+		}
+		Assertions.assertEquals(result.getFunction().getDatapoints().get(0), new ImmutablePair<Double,Double>(0.0,0.0));
+		checkFuzzyEquals(result.getFunction().getDatapoints().get(1), new ImmutablePair<Double,Double>(0.995,0.0));
+	
+		Assertions.assertEquals(result.getFunction().getDatapoints().get(2), new ImmutablePair<Double,Double>(1.0,1.0));
+
+		System.out.println("Result of goal satisfaction is:" + result.toString());
+
+		
+		
+	}
+	
+	private void checkFuzzyEquals(ImmutablePair<Double, Double> p1,
+			ImmutablePair<Double, Double> p2) {
+		Assertions.assertTrue(DoubleMath.fuzzyEquals(p1.getLeft(), p2.getLeft(), LinearPieceWiseFunction.TOLERANCE), "expected/observed="+p2.getLeft()+"/"+p1.getLeft());
+		Assertions.assertTrue(DoubleMath.fuzzyEquals(p1.getRight(), p2.getRight(), LinearPieceWiseFunction.TOLERANCE), "expected/observed="+p2.getRight()+"/"+p1.getRight());
+		
+	}
 
 	@Test
 	void testAssessFullUnSatisfaction() throws FunctionOperationException {
@@ -166,6 +250,7 @@ class LeafGoalImplTest {
 		Assertions.assertEquals(result.getFunction().getDatapoints().get(0), new ImmutablePair<Double,Double>(0.0,1.0));
 		Assertions.assertEquals(result.getFunction().getDatapoints().get(1), new ImmutablePair<Double,Double>(0.0,0.0));
 		Assertions.assertEquals(result.getFunction().getDatapoints().get(2), new ImmutablePair<Double,Double>(1.0,0.0));
+		System.out.println("Result of goal satisfaction is:" + result.toString());
 
 	}
 

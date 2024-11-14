@@ -49,13 +49,37 @@ public class LeafGoalImpl implements LeafGoal {
 	private final LeafGoalType type;
 	private FuzzyNumber truthValue;
 	private FuzzyNumber lastObservation = null;
+	private String name;
 
 	public LeafGoalImpl(LeafGoalType type, FuzzyNumber function) {
-		this.type = type;
-		this.truthValue = function;
+		this(type, function, "Default leaf goal");
 
 	}
 
+	public LeafGoalImpl(LeafGoalType type, FuzzyNumber truthValue, String name) {
+		super();
+		this.type = type;
+		this.truthValue = truthValue;
+		this.name = name;
+		Logger.info("Cronstructing Leaf goal named {}", name);
+	}
+
+	@Override
+	public LinearPieceWiseFunction getObservation() throws FunctionOperationException {
+		if(lastObservation!=null) {
+			return lastObservation.getFunction();
+		}
+		throw new FunctionOperationException("Observation was not set. Impossible to find its function");
+	}
+	
+	@Override
+	public LinearPieceWiseFunction getGoalTruthValue() throws FunctionOperationException {
+		if(truthValue!=null) {
+			return truthValue.getFunction();
+		}
+		throw new FunctionOperationException("Truth value was null. Impossible to find its function");
+	}
+	
 	@Override
 	public LeafGoalType getLeafType() {
 		return type;
@@ -124,11 +148,12 @@ public class LeafGoalImpl implements LeafGoal {
 						LinearPieceWiseFunction.TOLERANCE)) {
 					// Zero length
 					resultZeroLengthIntervals.add(newinterval.getFirst());
+					resultZeroLengthIntervals.add(newinterval.getLast());
 				} else {
 					resultInterval.addAll(newinterval);
 				}
 				Logger.info(
-						"Calculation finished. Current result interval is: {} and zero lenght intervals contain the points: {}",
+						"Calculation finished. Current result interval is: {} and zero length intervals contain the points: {}",
 						resultInterval.toString(), resultZeroLengthIntervals.toString());
 				leftXpoint = rightXPoint;
 			}
@@ -144,11 +169,14 @@ public class LeafGoalImpl implements LeafGoal {
 
 		// The Y values should match now because the single points are in a different
 		// DataPoints structure, but they are replicated
-		//resultInterval.retainLargestYforReplicatedX();
+		// resultInterval.retainLargestYforReplicatedX();
 
 		// Same for the single points. Sort and keep only the largest (to satisfy part
 		// of the "sup" in Zadeh's extension principle)
 		resultZeroLengthIntervals.sortByX();
+		
+		resultZeroLengthIntervals.removeElementsExistingInDataset(resultInterval);
+		
 		resultZeroLengthIntervals.retainLargestYforReplicatedX();
 		resultZeroLengthIntervals.removePointsWhoseYValueisTheSmallest(resultInterval);
 
@@ -159,9 +187,14 @@ public class LeafGoalImpl implements LeafGoal {
 		 * with the rest of points and then sort the result
 		 * 
 		 */
-		resultInterval.addAllSortedInEvenPositions(resultZeroLengthIntervals); //To in odd positions to avoid putting the single point in between the two points of an interval
+		Logger.debug("Assessment of zero lenght intervals after processing is: {}", resultZeroLengthIntervals.toString());
+		resultInterval.addAllSortedInEvenPositions(resultZeroLengthIntervals); // To in odd positions to avoid putting
+																				// the single point in between the two
+																				// points of an interval
+		Logger.info("Assessment of intervals ans single points finished. Result after merging with zero intervals is: {}", resultInterval.toString());
 		resultInterval.removeDuplicatedNeighborPoints();
 
+		Logger.info("Assessment of leaf goal '{}' finished. Result is is: {}", name, resultInterval.toString());
 		return new FuzzyBooleanImpl(new LinearPiecewiseFunctionImpl(resultInterval));
 
 	}
@@ -185,14 +218,65 @@ public class LeafGoalImpl implements LeafGoal {
 		Logger.debug("Method calculateResultInInterval: Calculated inverse of interval function is {}",
 				inverseIntervalFunction);
 
-		// Apply B(y)= O(truthValue^(−1)(y))
-
+		// Calculate B(y)
 		LinearPieceWiseFunctionDataPoints result = new LinearPieceWiseFunctionDataPoints();
-		result.add(new ImmutablePair<Double, Double>(minY,
-				observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(minY))));
-		result.add(new ImmutablePair<Double, Double>(maxY,
-				observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(maxY))));
+
+		// Case y=0;
+		if (DoubleMath.fuzzyEquals(minY, 0, LinearPieceWiseFunction.TOLERANCE)) {
+			Logger.debug("Case Min y=0");
+			// result.add(new ImmutablePair<Double, Double>(minY,
+			// observation.getLargestValueBeforX(rightXpoint, false)));
+			result.add(new ImmutablePair<Double, Double>(minY,
+					getFullDisatisfactionValueDependingOnCase(observation, leftXpoint, rightXpoint)));
+		} else {
+			// Apply B(y)= O(truthValue^(−1)(y))
+			Logger.debug("Case Min NOT y=0");
+			result.add(new ImmutablePair<Double, Double>(minY,
+					observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(minY))));
+		}
+		if (DoubleMath.fuzzyEquals(maxY, 1, LinearPieceWiseFunction.TOLERANCE)) {
+			// case y=1
+			// result.add(new ImmutablePair<Double, Double>(maxY,
+			// observation.getLargestValueAfterX(leftXpoint, false)));
+			Logger.debug("Case Max y=1");
+			result.add(new ImmutablePair<Double, Double>(maxY,
+					getFullsatisfactionValueDependingOnCase(observation, leftXpoint, rightXpoint)));
+		} else {// Apply B(y)= O(truthValue^(−1)(y))
+			Logger.debug("Case Max NOT y=1");
+			result.add(new ImmutablePair<Double, Double>(maxY,
+					observation.getFunctionValueAt(inverseIntervalFunction.getValueAt(maxY))));
+		}
+
+		Logger.debug("The result function is {}", result.toString());
 		return result;
+
+	}
+
+	private Double getFullsatisfactionValueDependingOnCase(FuzzyNumber observation, double leftXpoint,
+			double rightXpoint) throws FunctionOperationException {
+		
+		//return observation.getLargestValueBetween(leftXpoint, rightXpoint, false);
+		switch (type) {
+		case LB:
+			return observation.getFunctionValueAt(rightXpoint);
+		case UB:
+			return observation.getFunctionValueAt(leftXpoint);
+		default: // ( INT, MIN, MAX)
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private Double getFullDisatisfactionValueDependingOnCase(FuzzyNumber observation, double leftXpoint,
+			double rightXpoint) throws FunctionOperationException {
+		//return observation.getLargestValueBetween(leftXpoint, rightXpoint, false);
+		switch (type) {
+		case LB:
+			return observation.getFunctionValueAt(leftXpoint);
+		case UB:
+			return observation.getFunctionValueAt(rightXpoint);
+		default: // ( INT, MIN, MAX)
+			throw new UnsupportedOperationException();
+		}
 
 	}
 
@@ -226,5 +310,13 @@ public class LeafGoalImpl implements LeafGoal {
 		lastObservation = observation;
 
 	}
+
+	public String getName() {
+		return name;
+	}
+
+
+
+
 
 }

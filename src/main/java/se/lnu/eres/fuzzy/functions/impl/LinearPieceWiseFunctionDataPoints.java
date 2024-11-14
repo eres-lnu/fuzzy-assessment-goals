@@ -429,6 +429,29 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		}
 
 	}
+	
+
+	/**
+	 * This method removes the point <x,y> in this object if it finds that it already exist in the d2
+	 * @param resultInterval
+	 */
+	public void removeElementsExistingInDataset(LinearPieceWiseFunctionDataPoints d2) {
+		int size = datapoints.size();
+		for (int i = size - 1; i >= 0; i--) {
+			boolean matched=false;
+			for(ImmutablePair<Double, Double> d : d2) {
+				if(!matched) {
+				if(DoubleMath.fuzzyEquals(datapoints.get(i).getLeft(), d.getLeft(), LinearPieceWiseFunction.TOLERANCE) &&
+						DoubleMath.fuzzyEquals(datapoints.get(i).getRight(), d.getRight(), LinearPieceWiseFunction.TOLERANCE)) {
+					Logger.debug("Removing element in position {} in dataset with value {}", i, datapoints.get(i));
+					remove(i);
+					matched=true;
+				}
+			}
+			}
+		}
+		
+	}
 
 	private boolean valueXisAnIntervalExtreme(double x) {
 		for (ImmutablePair<Double, Double> point : getDatapoints()) {
@@ -449,5 +472,6 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		}
 		return smallestY;
 	}
+
 
 }

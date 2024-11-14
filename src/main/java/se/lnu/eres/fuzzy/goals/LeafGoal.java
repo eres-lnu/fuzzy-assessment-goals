@@ -23,6 +23,7 @@ package se.lnu.eres.fuzzy.goals;
 
 import se.lnu.eres.fuzzy.functions.FuzzyBoolean;
 import se.lnu.eres.fuzzy.functions.FuzzyNumber;
+import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
 
 public interface LeafGoal extends Goal {
@@ -34,5 +35,9 @@ public interface LeafGoal extends Goal {
 	FuzzyBoolean assessSatisfactionFromObservation(FuzzyNumber observation) throws FunctionOperationException;
 	
 	void setObservation(FuzzyNumber observation);
+
+	LinearPieceWiseFunction getObservation() throws FunctionOperationException;
+
+	LinearPieceWiseFunction getGoalTruthValue() throws FunctionOperationException;
 	
 }
