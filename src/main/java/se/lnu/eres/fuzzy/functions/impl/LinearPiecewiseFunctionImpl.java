@@ -371,11 +371,6 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 		while (i < points.size() && xPointsOfInterest.size() >= 0) {
 			f1right = points.get(i);
 
-			// Maybe there are more intersections
-			// leftXforf2 = rightXforf2;
-			// rightXforf2 = xPointsOfInterest.removeFirst();
-
-			// Maybe we are in one fo the
 
 			Logger.info(
 					"finding intersection betwen <x1,y1>={}, <x2,y2>={}, leftXforIntervalInF2={} and rightXforIntervalInF2={}",

@@ -80,7 +80,7 @@ public class Plotter {
 
 		chartPanel.setPreferredSize(new java.awt.Dimension(SIZEX, SIZEY));
 
-		// frame.setSize(800, 600);
+
 		frame.getContentPane().add(chartPanel);
 
 		if (ALL_PLOTS_IN_CENTER) {
@@ -94,7 +94,7 @@ public class Plotter {
 			}
 		}
 
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.pack();
 
@@ -250,25 +250,10 @@ public class Plotter {
 
 	public void save(String filename) throws IOException {
 
-//		int width = 640; /* Width of the image */
-//		int height = 480; /* Height of the image */
-
-//		File filejpeg = new File("target/" + filename+".jpeg" );
-//		System.out.println("Chart bounds are: " + chartPanel.getBounds().toString());
-//		ChartUtilities.saveChartAsPNG(filepng, lineChart, chartPanel.getWidth(), chartPanel.getHeight());
-//		ChartUtilities.saveChartAsJPEG(filejpeg, lineChart, chartPanel.getWidth(), chartPanel.getHeight());
-
-//		Rectangle rec = chartPanel.getBounds();
-//		BufferedImage img = new BufferedImage(rec.width, rec.height, BufferedImage.TYPE_INT_ARGB);
-//		Graphics g = img.getGraphics();
-//		chartPanel.paint(g);
-//		File filepng = new File("target/" + filename + ".png");
-//		ImageIO.write(img, "png", filepng);
-//		
+		
 		try {
 
 			String filepath = "target/images/" + filename + ".png";
-			System.out.println("Absolute path is: " + Paths.get(filepath).toAbsolutePath());
 			Files.deleteIfExists(Paths.get(filepath).toAbsolutePath());
 
 			OutputStream out = new FileOutputStream(filepath);

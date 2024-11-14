@@ -143,7 +143,6 @@ public abstract class AbstractGoal implements Goal {
 			Logger.debug("The minimum values for Y found for x={} have been: f1:{} and f2:{}", p, minimums1.toString(),
 					minimums2.toString());
 
-			// TODO: fix combination of minimums with SUP
 			for (int i = 0; i < Math.max(minimums1.size(), minimums2.size()); i++) {
 				resultFunction.addPoint(p, Math.max(minimums1.get(Math.min(minimums1.size() - 1, i)),
 						minimums2.get(Math.min(minimums2.size() - 1, i))));

@@ -30,37 +30,36 @@ import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 
 public class FuzzyBooleanImpl extends FuzzyNumberImpl implements FuzzyBoolean {
 
-
 	public FuzzyBooleanImpl(LinearPieceWiseFunction function) {
 		super(function);
 	}
-	
+
 	public FuzzyBooleanImpl() {
 		super();
 	}
 
 	@Override
-	public boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException  {
-		ImmutablePair<Double,Double> support = getSupport();
-		if(support.getLeft()<0) {return false;}
-		if(support.getRight()>1) {return false;}
-		
-		//The following should never happen 
-		
-		if(support.getLeft()>support.getRight()){return false;}
-		
+	public boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException {
+		ImmutablePair<Double, Double> support = getSupport();
+		if (support.getLeft() < 0) {
+			return false;
+		}
+		if (support.getRight() > 1) {
+			return false;
+		}
+
+		// The following should never happen
+		if (support.getLeft() > support.getRight()) {
+			return false;
+		}
+
 		return true;
-		
+
 	}
 
 	@Override
 	public String toString() {
 		return "AbstractFuzzyBoolean [function=" + function + "]";
 	}
-
-
-	
-	
-
 
 }

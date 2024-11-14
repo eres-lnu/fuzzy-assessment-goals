@@ -224,8 +224,6 @@ public class LeafGoalImpl implements LeafGoal {
 		// Case y=0;
 		if (DoubleMath.fuzzyEquals(minY, 0, LinearPieceWiseFunction.TOLERANCE)) {
 			Logger.debug("Case Min y=0");
-			// result.add(new ImmutablePair<Double, Double>(minY,
-			// observation.getLargestValueBeforX(rightXpoint, false)));
 			result.add(new ImmutablePair<Double, Double>(minY,
 					getFullDisatisfactionValueDependingOnCase(observation, leftXpoint, rightXpoint)));
 		} else {
@@ -236,8 +234,6 @@ public class LeafGoalImpl implements LeafGoal {
 		}
 		if (DoubleMath.fuzzyEquals(maxY, 1, LinearPieceWiseFunction.TOLERANCE)) {
 			// case y=1
-			// result.add(new ImmutablePair<Double, Double>(maxY,
-			// observation.getLargestValueAfterX(leftXpoint, false)));
 			Logger.debug("Case Max y=1");
 			result.add(new ImmutablePair<Double, Double>(maxY,
 					getFullsatisfactionValueDependingOnCase(observation, leftXpoint, rightXpoint)));
@@ -255,7 +251,6 @@ public class LeafGoalImpl implements LeafGoal {
 	private Double getFullsatisfactionValueDependingOnCase(FuzzyNumber observation, double leftXpoint,
 			double rightXpoint) throws FunctionOperationException {
 		
-		//return observation.getLargestValueBetween(leftXpoint, rightXpoint, false);
 		switch (type) {
 		case LB:
 			return observation.getFunctionValueAt(rightXpoint);
@@ -268,7 +263,7 @@ public class LeafGoalImpl implements LeafGoal {
 
 	private Double getFullDisatisfactionValueDependingOnCase(FuzzyNumber observation, double leftXpoint,
 			double rightXpoint) throws FunctionOperationException {
-		//return observation.getLargestValueBetween(leftXpoint, rightXpoint, false);
+
 		switch (type) {
 		case LB:
 			return observation.getFunctionValueAt(leftXpoint);

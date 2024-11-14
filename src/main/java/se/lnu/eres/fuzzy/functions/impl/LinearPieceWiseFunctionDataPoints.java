@@ -119,8 +119,6 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 
 		ImmutablePair<Double, Double> left = null;
 		boolean isLeftSet = false;
-		LinearPieceWiseFunctionDataPoints candidate = null;
-		boolean isCandidateSet = false;
 
 		for (ImmutablePair<Double, Double> right : datapoints) {
 			if (!isLeftSet) {
@@ -131,27 +129,14 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 						&& DoubleMath.fuzzyCompare(right.getLeft(), point, LinearPieceWiseFunction.TOLERANCE) >= 0) {
 
 					return new LinearPieceWiseFunctionDataPoints(left, right);
-//					if (isCandidateSet) {// override witht the second and return immediately
-//						Logger.debug(
-//								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
-//								point, left, right);
-//						return new LinearPieceWiseFunctionDataPoints(left, right);
-//					} else {
-//						Logger.debug(
-//								"Possible problem with the Varargs in the constructor. Calling with <point,left,right>=<{},{},{}>",
-//								point, left, right);
-//						candidate = new LinearPieceWiseFunctionDataPoints(left, right);
-//						isCandidateSet = true;
-//					}
+
 
 				}
 
 				left = right;
 			}
 		}
-		if (candidate != null) {
-			return candidate;
-		}
+
 		throw new FunctionOperationException(
 				"Interval for point " + point + " was not found in dataset=" + datapoints.toString());
 
@@ -343,7 +328,6 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		for (int i = 0; i < size; i++) {
 			for (int j = size - 1; j > i; j--) {
 				// Use the relaxed comparator with some tolerance
-				// if (datapoints.get(i).equals(datapoints.get(j))) {
 				if (myEqualDatapoints(datapoints.get(i), datapoints.get(j))) {
 					remove(j);
 					size--;
@@ -362,7 +346,6 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 		for (int i = size - 1; i > 0; i--) {
 			// Use the relaxed comparator with some tolerance
 			if (myEqualDatapoints(datapoints.get(i), datapoints.get(i - 1))) {
-				// if(datapoints.get(i).equals(datapoints.get(i-1))) {
 				remove(i);
 			}
 		}
