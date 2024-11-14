@@ -82,6 +82,7 @@ public abstract class AbstractGoal implements Goal {
 		for (int i = 1; i < children.size(); i++) {
 			partialResult = assessPartialSatisfactionAllowingDiscontinuous(partialResult,
 					children.get(i).assessSatisfaction());
+			Logger.debug("Partial result at iteration i={} is {}", i, partialResult.getFunction().toString());
 		}
 		return partialResult;
 
@@ -113,7 +114,7 @@ public abstract class AbstractGoal implements Goal {
 
 		// For each point of interests p
 		for (double p : xPointsOfInterest) {
-
+			Logger.debug("Starting loop for point of intestest {}", p);
 			// here it depends whether the goal is of type AND or OR. Find the largest value
 			// f2(x) such that x=>p or x<=p,
 			double maxYOfInterestInF2 = getLargestValueOfInterestFromFunction(f2, p, true);
@@ -152,10 +153,12 @@ public abstract class AbstractGoal implements Goal {
 			}
 		}
 
+		Logger.debug("Satisfaction result points calculated. Now sorting datapoints of {}", resultFunction);
 		// At this point the result interval has several duplicates and is out of order.
 		// Clean duplicates and sort.
 		resultFunction.getDatapoints().sortByX();
 		// resultFunction.getDatapoints().retainLargestYforReplicatedX();
+		Logger.debug("Satisfaction result points calculated an sorted. Now removing dupulicates from {}", resultFunction);
 		resultFunction.simplifyPiecewiseFunction();
 		return new FuzzyBooleanImpl(resultFunction);
 	}

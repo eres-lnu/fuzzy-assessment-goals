@@ -119,6 +119,18 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	 */
 	List<Double> getValuesAt(double xpoint) throws FunctionOperationException;
 
+	/**
+	 * If p is a point of discontinuity and extremesDiscarded=false, only the last
+	 * value value of left and the first of right are considered (of the three possible values, from left, at the
+	 * point, and from right).
+	 * 
+	 * @param p
+	 * @param approachFromLeft
+	 * @return
+	 * @throws FunctionOperationException 
+	 */
+	double getLargestValueBetween(double left, double right, boolean extremesDiscarded) throws FunctionOperationException;
+
 
 
 }

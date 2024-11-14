@@ -54,4 +54,6 @@ public interface FuzzyNumber extends FuzzyNumberCheck {
 
 	double getLargestValueBeforX(double p, boolean approachFromLeft) throws FunctionOperationException;
 
+	double getLargestValueBetween(double leftXpoint, double rightXpoint, boolean extremesDiscarded) throws FunctionOperationException;
+
 }

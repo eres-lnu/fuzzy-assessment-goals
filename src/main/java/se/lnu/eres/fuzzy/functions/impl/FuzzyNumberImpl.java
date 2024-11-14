@@ -166,6 +166,11 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 		return function.getLargestValueBeforeX(p, approachFromLeft);
 	}
 
+	@Override
+	public double getLargestValueBetween(double leftXpoint, double rightXpoint, boolean extremesDiscarded) throws FunctionOperationException {
+		return function.getLargestValueBetween(leftXpoint, rightXpoint, extremesDiscarded);
+	}
+
 
 
 }
