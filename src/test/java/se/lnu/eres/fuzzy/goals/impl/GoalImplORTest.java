@@ -46,7 +46,7 @@ class GoalImplORTest extends AbstractGoalImplTest {
 	}
 
 	@Test
-	void testAssessOrSatisfaction() throws FunctionOperationException {
+	void AssessOrSatisfactionTest() throws FunctionOperationException {
 		// An OR goal with two leaf goals as children.
 
 		LeafGoal lg1 = createLeafGoalRideSatisfaction();

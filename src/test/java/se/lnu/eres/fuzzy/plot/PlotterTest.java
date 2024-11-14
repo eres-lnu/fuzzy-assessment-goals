@@ -23,11 +23,9 @@ package se.lnu.eres.fuzzy.plot;
 
 
 import java.io.IOException;
-import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
@@ -35,27 +33,19 @@ import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 
 class PlotterTest {
 
-	static Scanner scanner;
 
-	@BeforeAll
-	static void setUp() throws Exception {
-
-		scanner = new Scanner(System.in);
-
-	}
 
 	@AfterAll
 	static void closeScanner() throws InterruptedException {
-		//scanner.nextLine();
 		//During the automatic tests, the next line gives a bit of time to look at the chart.
-		Thread.sleep(5000);
-		scanner.close();
+		Thread.sleep(1000);
 
 	}
 
 	@Test
 	void TestSimple() throws IOException {
 		Plotter p = new Plotter("Simple default");
+		p.showExample();
 		p.showPlot();
 		p.save("simple");
 

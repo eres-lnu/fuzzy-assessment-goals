@@ -21,8 +21,14 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="LinearPiecewiseFunctionImpl" level="debug"
+		<Logger name="LinearPiecewiseFunctionImpl" level="warn"
 			additivity="false">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Logger>
+
+		<Logger
+			name="LinearPieceWiseFunctionDataPoints" level="warn" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
@@ -34,17 +40,17 @@
 		</Logger>
 		
 		<Logger
-			name="LeafGoalImpl" level="debug" additivity="false">
+			name="LeafGoalImpl" level="warn" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
 		<Logger
-			name="AbstractGoal" level="debug" additivity="false">
+			name="AbstractGoal" level="info" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
 		<Logger
-			name="GoalOrImpl" level="debug" additivity="false">
+			name="GoalOrImpl" level="info" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
