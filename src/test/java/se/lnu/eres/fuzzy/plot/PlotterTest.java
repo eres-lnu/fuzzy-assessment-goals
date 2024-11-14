@@ -47,6 +47,7 @@ class PlotterTest {
 	@AfterAll
 	static void closeScanner() throws InterruptedException {
 		//scanner.nextLine();
+		//During the automatic tests, the next line gives a bit of time to look at the chart.
 		Thread.sleep(5000);
 		scanner.close();
 

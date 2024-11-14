@@ -5,15 +5,16 @@ import org.jfree.chart.ChartUtils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-
 
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.impl.LinearPieceWiseFunctionDataPoints;
@@ -27,9 +28,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Plotter {
-
+	/*
+	 * Following tutorials at: -
+	 * https://www.codejava.net/java-se/graphics/using-jfreechart-to-draw-xy-line-
+	 * chart-with-xydataset Except for the deprecated classes ChartUtils, UIUtils -
+	 * https://www.baeldung.com/jfreechart-visualize-data
+	 */
 
 	private JFrame frame;
 	private ChartPanel chartPanel;
@@ -37,25 +45,30 @@ public class Plotter {
 	private XYSeriesCollection dataset;
 	private XYLineAndShapeRenderer renderer;
 
-
 	public Plotter(String applicationTitle) {
-		// super(applicationTitle);
 		frame = new JFrame(applicationTitle);
+		// in case of adding several plots to the frame
+		frame.setLayout(new FlowLayout());
+	}
 
-		// setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+	public void showExample() {
 		dataset = createDatasetDefault();
 		lineChart = ChartFactory.createXYLineChart("The-title", "x-axis-title", "y-axis-title", dataset,
 				PlotOrientation.VERTICAL, false, true, false);
-
 		XYPlot plot = lineChart.getXYPlot();
 		renderer = new XYLineAndShapeRenderer();
 		plot.setRenderer(renderer);
 		addDefaultRenderedCharacteristics();
 
 		chartDisplayCharacteristics();
-
 	}
+
+	private static final int SIZEX = 300;
+	private static final int SIZEY = 150;
+	private static final boolean ALL_PLOTS_IN_CENTER = false;
+
+	private static int xloc = 10;
+	private static int yloc = 10;
 
 	private void chartDisplayCharacteristics() {
 		chartPanel = new ChartPanel(lineChart);
@@ -65,34 +78,67 @@ public class Plotter {
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setRangeGridlinePaint(Color.WHITE);
 
-		chartPanel.setPreferredSize(new java.awt.Dimension(560, 367));
+		chartPanel.setPreferredSize(new java.awt.Dimension(SIZEX, SIZEY));
 
 		// frame.setSize(800, 600);
-		frame.setContentPane(chartPanel);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(chartPanel);
 
+		if (ALL_PLOTS_IN_CENTER) {
+			UIUtils.centerFrameOnScreen(frame);
+		} else {
+			frame.setLocation(xloc, yloc);
+			xloc += SIZEX+20;
+			if (xloc > 2000) {
+				xloc = 10;
+				yloc += SIZEY+60;
+			}
+		}
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
-		UIUtils.centerFrameOnScreen(frame);
 
 	}
 
 	private Shape circle = new Ellipse2D.Double(-3.0, -3.0, 6.0, 6.0);
 	private Shape circlesmall = new Ellipse2D.Double(-0.5, -0.5, 1.0, 1.0);
 
-	public void addDatasetFromFunction(LinearPieceWiseFunction function) {
+	private Color currentColor = Color.RED;
 
-		dataset = new XYSeriesCollection();
-		renderer = new XYLineAndShapeRenderer();
-		lineChart = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true, true, false);
-		
+	public void addObservationValue(LinearPieceWiseFunction function) {
+		addDatasetFromFunction(function, true, false, frame.getTitle() + " goal&obs.");
+	}
+
+	public void addRequirementValue(LinearPieceWiseFunction function) {
+		currentColor = Color.BLUE;
+		addDatasetFromFunction(function, false, true, frame.getTitle() + " goal&obs.");
+		currentColor = Color.RED;
+	}
+
+	public void addDatasetFromFunction(LinearPieceWiseFunction function) {
+		addDatasetFromFunction(function, true, true, frame.getTitle() + " satisf.");
+	}
+
+	private int seriesIdx = -1;
+
+	private void addDatasetFromFunction(LinearPieceWiseFunction function, boolean createNewChart, boolean display,
+			String name) {
+
+		if (createNewChart) {
+			dataset = new XYSeriesCollection();
+			renderer = new XYLineAndShapeRenderer();
+			lineChart = ChartFactory.createXYLineChart(name, "", "", dataset, PlotOrientation.VERTICAL, false, true,
+					false);
+			seriesIdx = -1;
+		}
+		seriesIdx++;
+
 		LinearPieceWiseFunctionDataPoints points = function.getDatapoints();
-		XYSeries series = new XYSeries("s1");
-		int seriesIdx = 0;
+		XYSeries series = new XYSeries("s" + (seriesIdx + 1));
+
 		dataset.addSeries(series);
-		renderer.setSeriesPaint(0, Color.RED);
+		renderer.setSeriesPaint(seriesIdx, currentColor);
 		renderer.setSeriesShape(seriesIdx, circlesmall);
-		renderer.setSeriesStroke(0, new BasicStroke(4.0f));
+		renderer.setSeriesStroke(seriesIdx, new BasicStroke(4.0f));
 		series.add(points.get(0).getLeft(), points.get(0).getRight());
 		if (points.size() == 1) {
 			renderer.setSeriesShape(seriesIdx, circle);
@@ -100,8 +146,10 @@ public class Plotter {
 			if (points.get(1).getLeft().equals(points.get(0).getLeft())) {
 				// If the first one is a discontinuity, it is the actual value
 				renderer.setSeriesShape(seriesIdx, circle);
-				//And move the x-axis a bit to the left to graphically show better the value
-				lineChart.getXYPlot().getDomainAxis().setRange(points.get(0).getLeft()-0.025, points.getLast().getLeft()+0.025);
+				// And move the x-axis a bit to the left to graphically show better the value
+				lineChart.getXYPlot().getDomainAxis().setRange(points.get(0).getLeft() - 0.025,
+						points.getLast().getLeft() + 0.025);
+
 			}
 
 			// The rest of points
@@ -113,10 +161,10 @@ public class Plotter {
 					// A new series
 					seriesIdx++;
 					series = new XYSeries("s" + (seriesIdx + 1));
-					
+
 					dataset.addSeries(series);
 					// With smallcircles
-					renderer.setSeriesPaint(i, Color.RED);
+					renderer.setSeriesPaint(i, currentColor);
 					renderer.setSeriesShape(seriesIdx, circlesmall);
 					renderer.setSeriesStroke(i, new BasicStroke(4.0f));
 					// Unless next one exists and is also a discontinutiy, then big circle
@@ -136,9 +184,10 @@ public class Plotter {
 			}
 		}
 
-		
 		lineChart.getXYPlot().setRenderer(renderer);
-		chartDisplayCharacteristics();
+		if (display) {
+			chartDisplayCharacteristics();
+		}
 	}
 
 	private void addDefaultRenderedCharacteristics() {
@@ -152,12 +201,12 @@ public class Plotter {
 		renderer.setSeriesStroke(1, new BasicStroke(3.0f));
 		renderer.setSeriesStroke(2, new BasicStroke(3.0f));
 
-//		Shape squaresmall = new Rectangle2D.Double(-1.0, -1.0, 1.0, 1.0);
-//		Shape squarebig = new Rectangle2D.Double(-6.0, -6.0, 6.0, 6.0);
-//		renderer.setSeriesShape(0, squaresmall);
-//		renderer.setSeriesShape(1, squarebig);
-//		renderer.setSeriesShape(2, circle);
-//		System.out.println("the shape of the first series is: " + renderer.getSeriesShape(1).toString());
+		// sets shapes for series
+		Shape squaresmall = new Rectangle2D.Double(-1.0, -1.0, 1.0, 1.0);
+		Shape squarebig = new Rectangle2D.Double(-6.0, -6.0, 6.0, 6.0);
+		renderer.setSeriesShape(0, squaresmall);
+		renderer.setSeriesShape(1, squarebig);
+		renderer.setSeriesShape(2, circle);
 
 	}
 
@@ -217,7 +266,11 @@ public class Plotter {
 //		
 		try {
 
-			OutputStream out = new FileOutputStream("target/" + filename + ".png");
+			String filepath = "target/images/" + filename + ".png";
+			System.out.println("Absolute path is: " + Paths.get(filepath).toAbsolutePath());
+			Files.deleteIfExists(Paths.get(filepath).toAbsolutePath());
+
+			OutputStream out = new FileOutputStream(filepath);
 			ChartUtils.writeChartAsPNG(out, lineChart, chartPanel.getWidth(), chartPanel.getHeight());
 
 		} catch (IOException ex) {
