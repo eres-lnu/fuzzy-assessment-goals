@@ -21,7 +21,6 @@
  */
 package se.lnu.eres.fuzzy.plot;
 
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
@@ -33,11 +32,10 @@ import se.lnu.eres.fuzzy.functions.impl.LinearPiecewiseFunctionImpl;
 
 class PlotterTest {
 
-
-
 	@AfterAll
 	static void closeScanner() throws InterruptedException {
-		//During the automatic tests, the next line gives a bit of time to look at the chart.
+		// During the automatic tests, the next line gives a bit of time to look at the
+		// chart.
 		Thread.sleep(1000);
 
 	}
@@ -64,7 +62,6 @@ class PlotterTest {
 		p.addDatasetFromFunction(f);
 		p.showPlot();
 
-
 		Assertions.assertNotNull(p);
 	}
 
@@ -81,8 +78,6 @@ class PlotterTest {
 		p.addDatasetFromFunction(f);
 		p.showPlot();
 
-		
-
 		Assertions.assertNotNull(p);
 	}
 
@@ -98,15 +93,13 @@ class PlotterTest {
 		p.addDatasetFromFunction(f);
 		p.showPlot();
 
-		
-
 		Assertions.assertNotNull(p);
 	}
-	
+
 	@Test
 	void TestSinglePoint() {
 		Plotter p = new Plotter("Single point");
-		double xy[][] = new double[][] { { 0.0, 1 }};
+		double xy[][] = new double[][] { { 0.0, 1 } };
 
 		LinearPieceWiseFunction f = new LinearPiecewiseFunctionImpl();
 		for (int i = 0; i < xy.length; i++) {
@@ -114,8 +107,6 @@ class PlotterTest {
 		}
 		p.addDatasetFromFunction(f);
 		p.showPlot();
-
-		
 
 		Assertions.assertNotNull(p);
 	}
@@ -123,7 +114,7 @@ class PlotterTest {
 	@Test
 	void TestTwoPoints() {
 		Plotter p = new Plotter("Two points");
-		double xy[][] = new double[][] { { 0.0, 1 }, { 0.0, 0 }};
+		double xy[][] = new double[][] { { 0.0, 1 }, { 0.0, 0 } };
 
 		LinearPieceWiseFunction f = new LinearPiecewiseFunctionImpl();
 		for (int i = 0; i < xy.length; i++) {
@@ -132,12 +123,9 @@ class PlotterTest {
 		p.addDatasetFromFunction(f);
 		p.showPlot();
 
-		
-
 		Assertions.assertNotNull(p);
 	}
-	
-	
+
 	@Test
 	void TestLeafGoalFullSatisfaction() {
 		Plotter p = new Plotter("Full satisfaction");
@@ -149,9 +137,6 @@ class PlotterTest {
 		}
 		p.addDatasetFromFunction(f);
 		p.showPlot();
-
-		
-		
 
 		Assertions.assertNotNull(p);
 	}
@@ -169,7 +154,6 @@ class PlotterTest {
 		p.addDatasetFromFunction(f);
 		p.showPlot();
 
-		
 		Assertions.assertNotNull(p);
 	}
 
