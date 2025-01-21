@@ -80,8 +80,10 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 		System.out.println("Result of goal satisfaction is:" + result.toString());
 
 	}
+
 	@Test
-	void testAssessAndSatisfactionDiscontinuousComponentLessSatisfiedSwitchLeafOrder() throws FunctionOperationException {
+	void testAssessAndSatisfactionDiscontinuousComponentLessSatisfiedSwitchLeafOrder()
+			throws FunctionOperationException {
 
 		LeafGoal lg1 = createLeafDiscontinuousResult(0.9, 1.1, 4.0);
 		LeafGoal lg2 = createLeafGoalFuelConsumptionTriangularGivenTopValueAndWidth(0.3, 0.2);
@@ -98,7 +100,6 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 
 	}
 
-	
 	@Test
 	void testAssessAndSatisfactionDiscontinuousComponentMoreSatisfied() throws FunctionOperationException {
 
@@ -113,16 +114,16 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 		FuzzyBoolean result = g.assessSatisfaction();
 		Assertions.assertEquals(5, result.getFunction().getDatapoints().size(),
 				"Expected 6 elements but the result of goal satisfaction is:" + result.toString());
-		
-		double resultXY[][] = new double[][] {{0.0,0.68965}, {0.175,0.75}, {0.2, 1}, {0.3, 0}, {1,0}};
+
+		double resultXY[][] = new double[][] { { 0.0, 0.68965 }, { 0.175, 0.75 }, { 0.2, 1 }, { 0.3, 0 }, { 1, 0 } };
 		checkFuzzyEquals(resultXY, result);
 		System.out.println("Result of goal satisfaction is:" + result.toString());
-		
 
 	}
-	
+
 	@Test
-	void testAssessAndSatisfactionDiscontinuousComponentMoreSatisfiedSwitchLeafOrder() throws FunctionOperationException {
+	void testAssessAndSatisfactionDiscontinuousComponentMoreSatisfiedSwitchLeafOrder()
+			throws FunctionOperationException {
 
 		LeafGoal lg1 = createLeafDiscontinuousResult(0.9, 1.1, 4.0);
 		LeafGoal lg2 = createLeafGoalFuelConsumptionTriangularGivenTopValueAndWidth(0.8, 0.2);
@@ -135,15 +136,13 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 		FuzzyBoolean result = g.assessSatisfaction();
 		Assertions.assertEquals(5, result.getFunction().getDatapoints().size(),
 				"Expected 6 elements but the result of goal satisfaction is:" + result.toString());
-		
-		double resultXY[][] = new double[][] {{0.0,0.68965}, {0.175,0.75}, {0.2, 1}, {0.3, 0}, {1,0}};
+
+		double resultXY[][] = new double[][] { { 0.0, 0.68965 }, { 0.175, 0.75 }, { 0.2, 1 }, { 0.3, 0 }, { 1, 0 } };
 		checkFuzzyEquals(resultXY, result);
 		System.out.println("Result of goal satisfaction is:" + result.toString());
-		
 
 	}
-	
-	
+
 	@Test
 	void testAssessAndSatisfactionDoubleDiscontinuousTriplePoint() throws FunctionOperationException {
 
@@ -159,12 +158,11 @@ class GoalImplANDTest extends AbstractGoalImplTest {
 		Assertions.assertEquals(6, result.getFunction().getDatapoints().size(),
 				"Expected 6 elements but the result of goal satisfaction is:" + result.toString());
 		System.out.println("Result of goal satisfaction is:" + result.toString());
-		double resultXY[][] = new double[][] {{0.0,0.68965}, {0.5,0.86206}, {0.5,1.0}, {0.5,0.333333}, {0.55,0.0}, {1,0}};
+		double resultXY[][] = new double[][] { { 0.0, 0.68965 }, { 0.5, 0.86206 }, { 0.5, 1.0 }, { 0.5, 0.333333 },
+				{ 0.55, 0.0 }, { 1, 0 } };
 		checkFuzzyEquals(resultXY, result);
 		System.out.println("Result of goal satisfaction is:" + result.toString());
-		
+
 	}
-
-
 
 }
