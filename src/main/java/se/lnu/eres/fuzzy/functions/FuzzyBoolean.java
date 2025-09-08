@@ -24,18 +24,23 @@ package se.lnu.eres.fuzzy.functions;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 
-public interface FuzzyBoolean extends FuzzyNumber{
+public interface FuzzyBoolean extends FuzzyNumber {
 
-	
 	/**
-	 * @return Whether the object is a fuzzy number and also respects the two conditions to be a Fuzzy boolean
-	 * @throws FuzzyOperationException 
-	 * @throws FunctionOperationException 
+	 * @return Whether the object is a fuzzy number and also respects the two
+	 *         conditions to be a Fuzzy boolean
+	 * @throws FuzzyOperationException
+	 * @throws FunctionOperationException
 	 */
 	boolean isFuzzyBoolean() throws FuzzyOperationException, FunctionOperationException;
 
+	/**
+	 * @return a fuzzy boolean that is explicitly defined in the domain [0,1]. It
+	 *         fills wth 0's the parts that are not currently defined. This is
+	 *         useful for the weakening of goals, which "move" the function of the
+	 *         fuzzy boolean right or left, leaving parts undefined
+	 * @throws FunctionOperationException 
+	 */
+	FuzzyBoolean sanitize() throws FunctionOperationException;
 
-
-
-	
 }

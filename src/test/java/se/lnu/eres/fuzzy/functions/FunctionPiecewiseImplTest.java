@@ -44,7 +44,7 @@ class FunctionPiecewiseImplTest {
 	}
 
 	@Test
-	void testSuccessFuzzyNumber() throws FuzzyNumberConversionException {
+	void testSuccessFuzzyNumber() throws FuzzyNumberConversionException, FuzzyOperationException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
@@ -58,7 +58,7 @@ class FunctionPiecewiseImplTest {
 
 	
 	@Test
-	void testFailFuzzyNumberForMembershipMoreThan1() {
+	void testFailFuzzyNumberForMembershipMoreThan1() throws FuzzyOperationException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);
@@ -70,7 +70,7 @@ class FunctionPiecewiseImplTest {
 	}
 	
 	@Test
-	void testFailFuzzyNumberForNoMonotonicallyIncreasing() {
+	void testFailFuzzyNumberForNoMonotonicallyIncreasing() throws FuzzyOperationException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		function.addPoint(0, 0);
 		function.addPoint(5, 0);

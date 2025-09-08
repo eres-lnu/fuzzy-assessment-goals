@@ -27,15 +27,16 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy.functions.exceptions.FuzzyNumberConversionException;
+import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 import se.lnu.eres.fuzzy.functions.impl.LinearPieceWiseFunctionDataPoints;
 
-public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
+public interface LinearPieceWiseFunction extends FuzzyNumberCheck, Cloneable {
 
 	public static final double TOLERANCE = 0.0001;
 
 	void addPoint(double x, double y);
 
-	FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException;
+	FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException, FuzzyOperationException;
 
 	double maximumValueInPoints();
 
@@ -131,6 +132,11 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck {
 	 */
 	double getLargestValueBetween(double left, double right, boolean extremesDiscarded) throws FunctionOperationException;
 
+	ImmutablePair<Double, Double> getDefinedDomain();
+	
+	Object clone() throws CloneNotSupportedException;
+
+	
 
 
 }

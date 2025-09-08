@@ -21,10 +21,11 @@
  */
 package se.lnu.eres.fuzzy.functions;
 
+import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 
 public interface FuzzyNumberCheck {
 
-	boolean isFuzzyNumber();
+	boolean isFuzzyNumber() throws FuzzyOperationException;
 	
 	
 	

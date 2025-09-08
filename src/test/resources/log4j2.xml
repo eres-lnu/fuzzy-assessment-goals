@@ -5,7 +5,8 @@
 			<!--  <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t]
 			%-5level %logger{36}
 			- %msg%n" /> -->
-			<PatternLayout pattern="%d{mm:ss} %-5level %logger{36} - %M - %msg%n" />
+			<PatternLayout
+				pattern="%d{mm:ss} %-5level %logger{36} - %M - %msg%n" />
 			<ThresholdFilter level="warn" onMatch="DENY" onMismatch="ACCEPT" />
 
 		</Console>
@@ -28,7 +29,8 @@
 		</Logger>
 
 		<Logger
-			name="LinearPieceWiseFunctionDataPoints" level="warn" additivity="false">
+			name="LinearPieceWiseFunctionDataPoints" level="warn"
+			additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
@@ -40,7 +42,7 @@
 		</Logger>
 		
 		<Logger
-			name="LeafGoalImpl" level="warn" additivity="false">
+			name="LeafGoalImpl" level="debug" additivity="false">
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
@@ -59,6 +61,13 @@
 			<AppenderRef ref="console_out" />
 			<AppenderRef ref="console_err" />
 		</Logger>
+
+		<Logger
+			name="WeakenedGoalImplTest" level="trace" additivity="false">
+			<AppenderRef ref="console_out" />
+			<AppenderRef ref="console_err" />
+		</Logger>
+				
 
 		<Root level="info">
 			<AppenderRef ref="console_out" />

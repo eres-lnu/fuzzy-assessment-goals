@@ -23,6 +23,7 @@ package se.lnu.eres.fuzzy.functions.impl;
 
 import se.lnu.eres.fuzzy.functions.FuzzyNumberCheck;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
+import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 
 public abstract class AbstractFuzzyNumber implements FuzzyNumberCheck {
 
@@ -41,7 +42,7 @@ public abstract class AbstractFuzzyNumber implements FuzzyNumberCheck {
 
 
 	@Override
-	public boolean isFuzzyNumber() {
+	public boolean isFuzzyNumber() throws FuzzyOperationException {
 
 		// Condition 1: top y is 1.
 		if (function.maximumValueInPoints() != 1.0) {

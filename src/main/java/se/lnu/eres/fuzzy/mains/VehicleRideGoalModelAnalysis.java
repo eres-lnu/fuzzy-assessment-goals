@@ -42,36 +42,55 @@ public class VehicleRideGoalModelAnalysis {
 	public static void main(String[] args) throws FunctionOperationException, IOException {
 
 		VehicleRideGoalModelAnalysis model = new VehicleRideGoalModelAnalysis();
+		model.createRideSatisfactionModel();
 		model.evaluate();
 
 	}
 
-	private void evaluate() throws FunctionOperationException, IOException {
+	protected Goal rootSystemSatisfaction;
+	protected Goal rideSatisfaction, comfort;
+	protected LeafGoal rideDuration, fuelConsumption;
+	
+	
+	protected void createRideSatisfactionModel() throws FunctionOperationException, IOException{
 
-		Goal comfort = GoalFactory.CreateGoal(GoalType.AND);
+		comfort = GoalFactory.CreateGoal(GoalType.AND);
 
 		LeafGoal longitudinalAcceleration = createLeafGoalLongitudinalAcceleration();
+		
 		LeafGoal lateralAcceleration = createLeafGoalLateralAcceleration();
 		LeafGoal bumping = createLeafGoalBumpming();
+		
+		plotIntermediateResult(longitudinalAcceleration, "Longitudinal acceleration");
+		plotIntermediateResult(lateralAcceleration, "Lateral acceleration");
+		plotIntermediateResult(bumping, "Bumping");
 
 		comfort.addChild(longitudinalAcceleration);
 		comfort.addChild(lateralAcceleration);
 		comfort.addChild(bumping);
 
-		Goal rideSatisfaction = GoalFactory.CreateGoal(GoalType.OR);
+		rideSatisfaction = GoalFactory.CreateGoal(GoalType.OR);
 
-		LeafGoal rideDuration = createLeafGoalRideDuration();
+		rideDuration = createLeafGoalRideDuration();
+		plotIntermediateResult(rideDuration, "Ride Duration");
 
 		rideSatisfaction.addChild(rideDuration);
 		rideSatisfaction.addChild(comfort);
 
-		Goal rootSystemSatisfaction = GoalFactory.CreateGoal(GoalType.AND);
+		rootSystemSatisfaction = GoalFactory.CreateGoal(GoalType.AND);
 
-		LeafGoal fuelConsumption = createLeafGoalFuelConsumption();
+		fuelConsumption = createLeafGoalFuelConsumption();
+		plotIntermediateResult(fuelConsumption, "Fuel Consumption");
 
 		rootSystemSatisfaction.addChild(fuelConsumption);
 		rootSystemSatisfaction.addChild(rideSatisfaction);
+		
+	}
 
+	protected void evaluate() throws FunctionOperationException, IOException {
+
+
+		
 		FuzzyBoolean result = rootSystemSatisfaction.assessSatisfaction();
 
 		Plotter p = new Plotter("Root");
@@ -94,7 +113,9 @@ public class VehicleRideGoalModelAnalysis {
 
 	}
 
-	private LeafGoal createLeafGoalLongitudinalAcceleration() throws FunctionOperationException, IOException {
+	
+	
+	protected LeafGoal createLeafGoalLongitudinalAcceleration() throws FunctionOperationException, IOException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The goal and observation functions for the longitudinal acceleration
 		function.addPoint(0.0, 1.0);
@@ -116,12 +137,12 @@ public class VehicleRideGoalModelAnalysis {
 		
 
 		goal.setObservation(observation);
-		plotIntermediateResult(goal, "Longitudinal acceleration");
+
 
 		return goal;
 	}
 
-	private LeafGoal createLeafGoalLateralAcceleration() throws FunctionOperationException, IOException {
+	protected LeafGoal createLeafGoalLateralAcceleration() throws FunctionOperationException, IOException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 		// The goal and observation functions for the lateral acceleration
 		function.addPoint(0.0, 1.0);
@@ -140,11 +161,11 @@ public class VehicleRideGoalModelAnalysis {
 		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
 		
 		goal.setObservation(observation);
-		plotIntermediateResult(goal, "Lateral acceleration");
+
 		return goal;
 	}
 
-	private LeafGoal createLeafGoalBumpming() throws FunctionOperationException, IOException {
+	protected LeafGoal createLeafGoalBumpming() throws FunctionOperationException, IOException {
 		// The goal and observation functions for the bumping. 
 		//Fully satisfied goal 
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
@@ -165,11 +186,11 @@ public class VehicleRideGoalModelAnalysis {
 		
 
 		goal.setObservation(observation);
-		plotIntermediateResult(goal, "Bumping");
+
 		return goal;
 	}
 
-	private LeafGoal createLeafGoalRideDuration() throws FunctionOperationException, IOException {
+	protected LeafGoal createLeafGoalRideDuration() throws FunctionOperationException, IOException {
 		// Full sastifaction (at x=0);
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 
@@ -193,11 +214,11 @@ public class VehicleRideGoalModelAnalysis {
 		
 		
 		goal.setObservation(observation);
-		plotIntermediateResult(goal, "Ride Duration");
+
 		return goal;
 	}
 
-	private LeafGoal createLeafGoalFuelConsumption() throws FunctionOperationException, IOException {
+	protected LeafGoal createLeafGoalFuelConsumption() throws FunctionOperationException, IOException {
 		LinearPieceWiseFunction function = new LinearPiecewiseFunctionImpl();
 
 		function.addPoint(0.0, 1.0);
@@ -220,18 +241,18 @@ public class VehicleRideGoalModelAnalysis {
 		FuzzyNumber observation = new FuzzyNumberImpl(observationFunction);
 		
 		goal.setObservation(observation);
-		plotIntermediateResult(goal, "Fuel Consumption");
+
 		return goal;
 	}
 
-	private void plotRequirementAndObservation(Plotter p, LinearPieceWiseFunction requirement, LinearPieceWiseFunction observationFunction) throws IOException {
+	protected void plotRequirementAndObservation(Plotter p, LinearPieceWiseFunction requirement, LinearPieceWiseFunction observationFunction) throws IOException {
 		p.addObservationValue(observationFunction);
 		p.addRequirementValue(requirement);
 		p.showPlot();
 		
 	}
 
-	private void plotIntermediateResult(LeafGoal goal, String name) throws FunctionOperationException, IOException {
+	protected void plotIntermediateResult(LeafGoal goal, String name) throws FunctionOperationException, IOException {
 		FuzzyBoolean result = goal.assessSatisfaction();
 		Plotter p = new Plotter(name);
 		plotRequirementAndObservation(p,  goal.getGoalTruthValue(), goal.getObservation());

@@ -55,7 +55,7 @@ public class FuzzyNumberImpl extends AbstractFuzzyNumber implements FuzzyNumber 
 		
 	}
 	
-	static public boolean IsFuzzyNumber(LinearPieceWiseFunction function) {
+	static public boolean IsFuzzyNumber(LinearPieceWiseFunction function) throws FuzzyOperationException {
 
 		return (new FuzzyNumberImpl(function)).isFuzzyNumber();
 

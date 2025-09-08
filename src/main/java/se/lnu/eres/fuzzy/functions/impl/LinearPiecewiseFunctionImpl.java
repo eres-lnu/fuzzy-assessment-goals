@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,8 +37,10 @@ import se.lnu.eres.fuzzy.functions.FuzzyNumber;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
 import se.lnu.eres.fuzzy.functions.exceptions.FuzzyNumberConversionException;
+import se.lnu.eres.fuzzy.functions.exceptions.FuzzyOperationException;
 
 public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
+
 
 	private static final Logger Logger = LogManager.getLogger(LinearPiecewiseFunctionImpl.class.getSimpleName());
 
@@ -84,7 +87,7 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 	}
 
 	@Override
-	public FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException {
+	public FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException, FuzzyOperationException {
 		if (FuzzyNumberImpl.IsFuzzyNumber(this)) {
 			return new FuzzyNumberImpl(this);
 		}
@@ -95,7 +98,7 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 	}
 
 	@Override
-	public boolean isFuzzyNumber() {
+	public boolean isFuzzyNumber() throws FuzzyOperationException {
 		return FuzzyNumberImpl.IsFuzzyNumber(this);
 	}
 
@@ -732,5 +735,22 @@ public class LinearPiecewiseFunctionImpl implements LinearPieceWiseFunction {
 		Logger.info("checking values between {}--{} in function {} and found {}", left, right, points.toString(), max);
 		return max;
 	}
+	
+	@Override
+	public ImmutablePair<Double, Double> getDefinedDomain() {
+		//Assuming that the function is in order of X, returns the first point (minimum x) and last point (maximum X)
+		
+		//Maybe there is only one datapoint
+		int upperBound = getDatapoints().size()-1;
+		return new ImmutablePair<Double, Double>(getDatapoints().get(0).getLeft(), getDatapoints().get(upperBound).getLeft());
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new LinearPiecewiseFunctionImpl(SerializationUtils.clone(points));
+	}
+
+
+
 
 }

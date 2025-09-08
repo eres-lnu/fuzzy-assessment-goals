@@ -21,6 +21,7 @@
  */
 package se.lnu.eres.fuzzy.functions.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +38,7 @@ import com.google.common.math.DoubleMath;
 import se.lnu.eres.fuzzy.functions.LinearPieceWiseFunction;
 import se.lnu.eres.fuzzy.functions.exceptions.FunctionOperationException;
 
-public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair<Double, Double>> {
+public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair<Double, Double>>, Serializable {
 
 	private static final Logger Logger = LogManager.getLogger(LinearPieceWiseFunctionDataPoints.class.getSimpleName());
 
