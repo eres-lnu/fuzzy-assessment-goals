@@ -165,9 +165,9 @@ public class Plotter {
 
 					dataset.addSeries(series);
 					// With smallcircles
-					renderer.setSeriesPaint(i, currentColor);
+					renderer.setSeriesPaint(seriesIdx, currentColor);
 					renderer.setSeriesShape(seriesIdx, circlesmall);
-					renderer.setSeriesStroke(i, new BasicStroke(4.0f));
+					renderer.setSeriesStroke(seriesIdx, new BasicStroke(4.0f));
 					// Unless next one exists and is also a discontinutiy, then big circle
 					if (i + 1 < points.size() && points.get(i).getLeft().equals(points.get(i + 1).getLeft())) {
 						renderer.setSeriesShape(seriesIdx, circle);

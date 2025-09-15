@@ -29,14 +29,14 @@ import se.lnu.eres.fuzzy.goals.LeafGoal;
 import se.lnu.eres.fuzzy.goals.impl.GoalWeakeningFunctionImpl;
 import se.lnu.eres.fuzzy.goals.impl.WeakenedGoalImpl;
 
-public class VehicleRideGoalModelAnalysisWeakenFuelConsumption extends VehicleRideGoalModelAnalysis {
+public class VehicleAnalysisWeakenFuelConsumption extends VehicleRideGoalModelAnalysis {
 
 	private static final double Weaknessing[] = { 1, 0.9, 0.8, 0.7 };
 
 	public static void main(String[] args) throws FunctionOperationException, IOException {
 
 		for (int i = 0; i < Weaknessing.length; i++) {
-			VehicleRideGoalModelAnalysisWeakenFuelConsumption model = new VehicleRideGoalModelAnalysisWeakenFuelConsumption();
+			VehicleAnalysisWeakenFuelConsumption model = new VehicleAnalysisWeakenFuelConsumption();
 			model.setExperimentIndex(i);
 			model.createRideSatisfactionModel();
 			model.evaluate();

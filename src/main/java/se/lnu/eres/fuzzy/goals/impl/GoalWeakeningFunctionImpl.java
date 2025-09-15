@@ -59,7 +59,7 @@ public class GoalWeakeningFunctionImpl extends FuzzyNumberImpl {
 			function.addPoint(alpha, 0.0);
 			function.addPoint(1.0, 1.0-alpha);
 			//and it remains at that value, without ever reaching one
-			function.addPoint(Double.MAX_VALUE, 1.0-alpha);
+			//function.addPoint(Double.MAX_VALUE, 1.0-alpha);
 			
 			break;
 		default:

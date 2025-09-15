@@ -72,18 +72,19 @@ public class FuzzyBooleanImpl extends FuzzyNumberImpl implements FuzzyBoolean {
 		LinearPieceWiseFunction newFunction = new LinearPiecewiseFunctionImpl();
 
 		// Get the support and if it is less than [0,1], add points.
-		ImmutablePair<Double, Double> support = getFunction().getDefinedDomain();
+		ImmutablePair<Double, Double> domain = getFunction().getDefinedDomain();
+		Logger.info("Domain is: {}", domain.toString());
 		
-		if (support.getLeft() > 0) {
-			Logger.info("Left part of support larger than 0. It is: {}", support.getLeft());
+		if (domain.getLeft() > 0) {
+			Logger.info("Left part of domeain larger than 0. It is: {}", domain.getLeft());
 			// Points to add because the domain is too narrow.
 			// If the value at the support is larger than 0, then there are two points to
 			// add:
 			// One at the current support with value 0 and another at the (0,0)
 			newFunction.addPoint(0, 0);
-			if (!getFunctionValuesAt(support.getLeft()).contains(Double.valueOf(0))) {
+			if (!getFunctionValuesAt(domain.getLeft()).contains(Double.valueOf(0))) {
 				//Add also the <x,y> such that x=leftSuppport and y=0
-				newFunction.addPoint(support.getLeft(), 0);
+				newFunction.addPoint(domain.getLeft(), 0);
 			}
 			
 		}
@@ -93,12 +94,12 @@ public class FuzzyBooleanImpl extends FuzzyNumberImpl implements FuzzyBoolean {
 			newFunction.addPoint(point.getLeft(), point.getRight());
 		}
 		
-		if(support.getRight()<1.0) {
+		if(domain.getRight()<1.0) {
 			//Points to add becasue the domain did not finish at 1.0.
 			
-			if(!getFunctionValuesAt(support.getRight()).contains(Double.valueOf(0))) {
+			if(!getFunctionValuesAt(domain.getRight()).contains(Double.valueOf(0))) {
 				//Add also the value 0 to the x of the prevoius support
-				newFunction.addPoint(support.getRight(), 0);
+				newFunction.addPoint(domain.getRight(), 0);
 			}
 			
 			newFunction.addPoint(1, 0);
