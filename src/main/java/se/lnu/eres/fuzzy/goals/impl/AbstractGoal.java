@@ -158,6 +158,9 @@ public abstract class AbstractGoal implements Goal {
 		// Clean duplicates and sort.
 		resultFunction.getDatapoints().sortByX();
 		// resultFunction.getDatapoints().retainLargestYforReplicatedX();
+		// Discontinuities closer than TOLERANCE return each other's values, which
+		// would duplicate the points at the same x in every assessment
+		resultFunction.getDatapoints().reduceRepeatedXToThreePoints();
 		Logger.debug("Satisfaction result points calculated an sorted. Now removing dupulicates from {}", resultFunction);
 		resultFunction.simplifyPiecewiseFunction();
 		return new FuzzyBooleanImpl(resultFunction);

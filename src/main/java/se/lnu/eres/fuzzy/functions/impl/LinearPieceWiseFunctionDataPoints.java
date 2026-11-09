@@ -353,6 +353,34 @@ public class LinearPieceWiseFunctionDataPoints implements Iterable<ImmutablePair
 
 	}
 
+	/**
+	 * Reduces every group of consecutive points with exactly the same x to at most
+	 * three points: the first one (limit from the left), the second one (value of
+	 * the function at x) and the last one (limit from the right). The rest of the
+	 * points in the group are redundant and, if kept, their number may grow
+	 * exponentially along the operations between functions. It assumes that the
+	 * datapoints are sorted by X.
+	 */
+	public void reduceRepeatedXToThreePoints() {
+		List<ImmutablePair<Double, Double>> newDatapoints = new ArrayList<ImmutablePair<Double, Double>>();
+		int start = 0;
+		while (start < datapoints.size()) {
+			int end = start;
+			while (end + 1 < datapoints.size() && datapoints.get(end + 1).getLeft().equals(datapoints.get(start).getLeft())) {
+				end++;
+			}
+			newDatapoints.add(datapoints.get(start));
+			if (end - start >= 2) {
+				newDatapoints.add(datapoints.get(start + 1));
+			}
+			if (end > start) {
+				newDatapoints.add(datapoints.get(end));
+			}
+			start = end + 1;
+		}
+		datapoints = newDatapoints;
+	}
+
 	private boolean myEqualDatapoints(ImmutablePair<Double, Double> p1, ImmutablePair<Double, Double> p2) {
 
 		if (!DoubleMath.fuzzyEquals(p1.getLeft(), p2.getLeft(), LinearPieceWiseFunction.TOLERANCE)) {

@@ -53,4 +53,27 @@ class LinearPieceWiseFunctionDataPointsTest {
 		Assertions.assertEquals(points.getIntervalContaining(0.3), new LinearPieceWiseFunctionDataPoints(new ImmutablePair<Double,Double>(0.0, 1.0),new ImmutablePair<Double,Double>(0.56, 1.0)));
 	}
 
+	@Test
+	void testReduceRepeatedXToThreePoints() {
+		LinearPieceWiseFunctionDataPoints points = new LinearPieceWiseFunctionDataPoints();
+		points.add(new ImmutablePair<Double,Double>(0.0, 0.0));
+		// Jump at 0.3 with the value at the point different from both limits
+		points.add(new ImmutablePair<Double,Double>(0.3, 0.2));
+		points.add(new ImmutablePair<Double,Double>(0.3, 0.5));
+		points.add(new ImmutablePair<Double,Double>(0.3, 0.2));
+		points.add(new ImmutablePair<Double,Double>(0.3, 0.5));
+		points.add(new ImmutablePair<Double,Double>(0.3, 1.0));
+		// Jump at 0.4 with only two points, kept as they are
+		points.add(new ImmutablePair<Double,Double>(0.4, 1.0));
+		points.add(new ImmutablePair<Double,Double>(0.4, 0.0));
+		points.add(new ImmutablePair<Double,Double>(1.0, 0.0));
+
+		points.reduceRepeatedXToThreePoints();
+
+		Assertions.assertEquals(new LinearPieceWiseFunctionDataPoints(new ImmutablePair<Double,Double>(0.0, 0.0),
+				new ImmutablePair<Double,Double>(0.3, 0.2), new ImmutablePair<Double,Double>(0.3, 0.5),
+				new ImmutablePair<Double,Double>(0.3, 1.0), new ImmutablePair<Double,Double>(0.4, 1.0),
+				new ImmutablePair<Double,Double>(0.4, 0.0), new ImmutablePair<Double,Double>(1.0, 0.0)), points);
+	}
+
 }
