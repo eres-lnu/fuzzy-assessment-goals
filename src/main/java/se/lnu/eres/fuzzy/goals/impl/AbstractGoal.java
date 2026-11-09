@@ -144,8 +144,9 @@ public abstract class AbstractGoal implements Goal {
 					minimums2.toString());
 
 			for (int i = 0; i < Math.max(minimums1.size(), minimums2.size()); i++) {
-				resultFunction.addPoint(p, Math.max(minimums1.get(Math.min(minimums1.size() - 1, i)),
-						minimums2.get(Math.min(minimums2.size() - 1, i))));
+				resultFunction.addPoint(snapToBounds(p), snapToBounds(Math.max(
+						minimums1.get(Math.min(minimums1.size() - 1, i)),
+						minimums2.get(Math.min(minimums2.size() - 1, i)))));
 				Logger.debug(
 						"Added point to result function for the point of interest p={}. Now the result function looks like: {}",
 						p, resultFunction.toString());
@@ -160,6 +161,21 @@ public abstract class AbstractGoal implements Goal {
 		Logger.debug("Satisfaction result points calculated an sorted. Now removing dupulicates from {}", resultFunction);
 		resultFunction.simplifyPiecewiseFunction();
 		return new FuzzyBooleanImpl(resultFunction);
+	}
+
+	/**
+	 * Removes floating-point rounding errors close to the bounds of a fuzzy
+	 * boolean: values within SNAP_TOLERANCE of 0 or 1 are set exactly to 0 or 1.
+	 * Other values are returned unchanged.
+	 */
+	static double snapToBounds(double value) {
+		if (Math.abs(value) <= LinearPieceWiseFunction.SNAP_TOLERANCE) {
+			return 0.0;
+		}
+		if (Math.abs(value - 1.0) <= LinearPieceWiseFunction.SNAP_TOLERANCE) {
+			return 1.0;
+		}
+		return value;
 	}
 
 	/**

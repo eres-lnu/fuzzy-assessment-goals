@@ -34,6 +34,14 @@ public interface LinearPieceWiseFunction extends FuzzyNumberCheck, Cloneable {
 
 	public static final double TOLERANCE = 0.0001;
 
+	/**
+	 * Values closer than this to the bounds 0 and 1 are considered the result of
+	 * floating-point rounding errors and are set exactly to 0 or 1. It is several
+	 * orders of magnitude smaller than TOLERANCE so it does not interfere with the
+	 * comparisons that use TOLERANCE.
+	 */
+	public static final double SNAP_TOLERANCE = 1e-8;
+
 	void addPoint(double x, double y);
 
 	FuzzyNumber getFuzzyNumber() throws FuzzyNumberConversionException, FuzzyOperationException;
