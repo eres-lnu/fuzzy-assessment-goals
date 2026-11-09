@@ -17,6 +17,8 @@
 		<maven.compiler.target>22</maven.compiler.target>
 		<log4j.version>2.23.1</log4j.version>
 		<guava.version>33.2.1-jre</guava.version>
+		<!-- Stress tests are excluded by default. Enable them with -Pstress -->
+		<stress.tests.exclude>**/stress/**</stress.tests.exclude>
 	</properties>
 
 	<dependencies>
@@ -73,6 +75,11 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
+				<configuration>
+					<excludes>
+						<exclude>${stress.tests.exclude}</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>default-test</id>
@@ -85,4 +92,14 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- Also runs the (slow) stress tests, e.g. for release candidates: mvn clean install -Pstress -->
+		<profile>
+			<id>stress</id>
+			<properties>
+				<stress.tests.exclude>**/NoTestsExcluded.java</stress.tests.exclude>
+			</properties>
+		</profile>
+	</profiles>
 </project>
