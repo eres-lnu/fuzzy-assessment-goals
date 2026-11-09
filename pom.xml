@@ -13,8 +13,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>22</maven.compiler.source>
-		<maven.compiler.target>22</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<log4j.version>2.23.1</log4j.version>
 		<guava.version>33.2.1-jre</guava.version>
 		<!-- Stress tests are excluded by default. Enable them with -Pstress -->
