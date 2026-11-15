@@ -73,3 +73,14 @@ mvn test -Pstress -Dtest='GoalTree*StressTest' -Dperf.leaves.to=300 -Dperf.repet
 Each configuration prints a line in the console with the execution time (median, minimum and maximum), the memory allocated during the assessment, the memory retained after it, and the number of points of the result. The same results are written, one file per class, to `target/stress-results/`, as CSV files with the columns `scenario, children_per_node, leaves, depth, repetitions, time_median_ms, time_min_ms, time_max_ms, allocated_median_mb, retained_median_mb, result_points`.
 
 The tests also check that the result of each assessment is a fuzzy boolean. If it is not, the test fails after printing the points of the result and saving a plot in `target/images/test-errors/` (a desktop environment is needed to create the plot).
+
+
+### Developer tools
+
+`BalancedTreeVisualTest` (in the same folder as the stress tests) is not a test with assertions. It is a tool for inspecting the goals of one of the trees of the balanced stress tests, with the same builder and seed. It opens a window with the goal and the observation of each of the leaves 210 to 219 of a tree with 500 leaves, and one window with the satisfaction of each of their ancestors up to the root. It needs a graphical environment, and closing any of the windows closes all of them and finishes the test:
+
+```
+mvn test -Pstress -Dtest=BalancedTreeVisualTest
+```
+
+The tree can be changed with the system properties `visual.children` (children per goal, default 4), `visual.leaves` (default 500), `visual.first` (default 210) and `visual.last` (default 219).
